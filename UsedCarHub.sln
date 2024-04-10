@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsedCarHub.API", "UsedCarHub.API\UsedCarHub.API.csproj", "{665DBEC5-653B-4DE5-85F5-1490EE1C70A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsedCarHub.BusinessLogic", "UsedCarHub.BusinessLogic\UsedCarHub.BusinessLogic.csproj", "{40A974A3-7C1B-49C9-B0F5-6AAA6792BBC7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsedCarHub.Common", "UsedCarHub.Common\UsedCarHub.Common.csproj", "{ADDDDC8A-92FE-467A-B1AE-2202215457F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsedCarHub.Domain", "UsedCarHub.Domain\UsedCarHub.Domain.csproj", "{DB72BC0F-94E8-4593-8157-986F47B20069}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsedCarHub.Repository", "UsedCarHub.Repository\UsedCarHub.Repository.csproj", "{B8AD080D-DB4A-4BB6-9C7A-691F84EAC89E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1CF5C9AE-0566-4CA5-8900-B41C0641B77F}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.gitignore = .gitignore
+		Dockerfile = Dockerfile
+		LICENSE = LICENSE
+		README.md = README.md
+		UsedCarHub.http = UsedCarHub.http
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{665DBEC5-653B-4DE5-85F5-1490EE1C70A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{665DBEC5-653B-4DE5-85F5-1490EE1C70A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{665DBEC5-653B-4DE5-85F5-1490EE1C70A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{665DBEC5-653B-4DE5-85F5-1490EE1C70A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40A974A3-7C1B-49C9-B0F5-6AAA6792BBC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A974A3-7C1B-49C9-B0F5-6AAA6792BBC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A974A3-7C1B-49C9-B0F5-6AAA6792BBC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A974A3-7C1B-49C9-B0F5-6AAA6792BBC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADDDDC8A-92FE-467A-B1AE-2202215457F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADDDDC8A-92FE-467A-B1AE-2202215457F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADDDDC8A-92FE-467A-B1AE-2202215457F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADDDDC8A-92FE-467A-B1AE-2202215457F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB72BC0F-94E8-4593-8157-986F47B20069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB72BC0F-94E8-4593-8157-986F47B20069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB72BC0F-94E8-4593-8157-986F47B20069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB72BC0F-94E8-4593-8157-986F47B20069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8AD080D-DB4A-4BB6-9C7A-691F84EAC89E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AD080D-DB4A-4BB6-9C7A-691F84EAC89E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AD080D-DB4A-4BB6-9C7A-691F84EAC89E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AD080D-DB4A-4BB6-9C7A-691F84EAC89E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {06115D85-E221-432D-A0EB-847F1A4021B1}
+	EndGlobalSection
+EndGlobal

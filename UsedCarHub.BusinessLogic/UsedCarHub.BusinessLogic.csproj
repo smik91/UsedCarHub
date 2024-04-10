@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UsedCarHub.Common\UsedCarHub.Common.csproj" />
+    <ProjectReference Include="..\UsedCarHub.Repository\UsedCarHub.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
