@@ -1,6 +1,0 @@
-@UsedCarHub_HostAddress = http://localhost:5208
-
-GET {{UsedCarHub_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
