@@ -4,7 +4,7 @@ namespace UsedCarHub.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class CarsController : ControllerBase
     {
         
     }
