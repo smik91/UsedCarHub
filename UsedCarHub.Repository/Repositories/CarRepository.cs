@@ -6,7 +6,7 @@ using UsedCarHub.Repository.Interfaces;
 
 namespace UsedCarHub.Repository.Repositories
 {
-    internal class CarRepository : ICarRepository
+    public class CarRepository : ICarRepository
     {
         private readonly AppDbContext _dbContext;
 
