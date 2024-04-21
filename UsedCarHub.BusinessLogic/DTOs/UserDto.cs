@@ -2,7 +2,7 @@ namespace UsedCarHub.BusinessLogic.DTOs
 {
     public class UserDto
     {
-        public string userName { get; set; }
-        public string email { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
     }
 }

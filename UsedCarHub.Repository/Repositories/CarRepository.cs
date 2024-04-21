@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UsedCarHub.Common.Errors;
 using UsedCarHub.Common.Results;
 using UsedCarHub.Domain;
 using UsedCarHub.Domain.Entities;
@@ -19,15 +20,15 @@ namespace UsedCarHub.Repository.Repositories
         {
             if (await _dbContext.Cars.AnyAsync(c => c.RegistrationNumber == car.RegistrationNumber))
             {
-                return Result<CarEntity>.Failure("A car with such reg. number already exists");
+                return Result<CarEntity>.Failure(CarError.SameRegNumber);
             }
             if (car.RegistrationNumber == null)
             {
-                return Result<CarEntity>.Failure("Registration number is required");
+                return Result<CarEntity>.Failure(CarError.RegNumberIsNull);
             }
             if (car.Model == null)
             {
-                return Result<CarEntity>.Failure("Model is required");
+                return Result<CarEntity>.Failure(CarError.ModelIsNull);
             }
             await _dbContext.Cars.AddAsync(car);
             await _dbContext.SaveChangesAsync();
@@ -39,7 +40,7 @@ namespace UsedCarHub.Repository.Repositories
             var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == id);
             if (car == null)
             {
-                return Result<CarEntity>.Failure("The car with this Id does not exist");
+                return Result<CarEntity>.Failure(CarError.NotFoundById);
             }
             _dbContext.Cars.Remove(car);
             await _dbContext.SaveChangesAsync();
@@ -56,7 +57,7 @@ namespace UsedCarHub.Repository.Repositories
             var car = await _dbContext.Cars.AsNoTracking().Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
             if (car == null)
             {
-                return Result<CarEntity>.Failure("The car with this Id does not exist");
+                return Result<CarEntity>.Failure(CarError.NotFoundById);
             }
             return Result<CarEntity>.Success(car);
         }

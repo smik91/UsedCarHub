@@ -1,5 +1,6 @@
 using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
+using UsedCarHub.Common.Errors;
 using UsedCarHub.Common.Interfaces;
 using UsedCarHub.Common.Results;
 using UsedCarHub.Domain.Entities;
@@ -19,6 +20,7 @@ namespace UsedCarHub.BusinessLogic.Services
             _userRepository = userRepository;
             _jwtProvider = jwtProvider;
         }
+        
         public async Task<Result<UserDto>> RegisterAsync(string userName, string email, string password)
         {
             var hashedPassword = _passwordHasher.HashPassword(password);
@@ -28,34 +30,34 @@ namespace UsedCarHub.BusinessLogic.Services
             user.Email = email;
             user.PasswordHash = hashedPassword;
             //------------------
-            var resultRepository = await _userRepository.AddAsync(user);
-            if (resultRepository.IsSuccess)
+            var AddAsyncResult = await _userRepository.AddAsync(user);
+            if (AddAsyncResult.IsSuccess)
             {
                 // ЗАЮЗАТЬ АВТОМАППЕР(РАЗОБРАТЬСЯ ПОЗЖЕ)
                 UserDto userDto = new UserDto();
-                userDto.userName = resultRepository.Value.UserName;
-                userDto.email = resultRepository.Value.Email;
+                userDto.UserName = AddAsyncResult.Value.UserName;
+                userDto.Email = AddAsyncResult.Value.Email;
                 //------------------
                 return Result<UserDto>.Success(userDto);
             }
 
-            return Result<UserDto>.Failure(resultRepository.ErrorMessage);
+            return Result<UserDto>.Failure(AddAsyncResult.ExecutionError);
         }
 
         public async Task<Result<string>> LoginAsync(string userName, string password)
         {
-            var resultRepository = await _userRepository.GetByUserNameAsync(userName);
-            if (resultRepository.IsSuccess)
+            var getByUserNameResult = await _userRepository.GetByUserNameAsync(userName);
+            if (getByUserNameResult.IsSuccess)
             {
-                bool verifyPassword = _passwordHasher.VerifyPassword(password, resultRepository.Value.PasswordHash);
-                if (verifyPassword == false)
+                var isPasswordVerified  = _passwordHasher.VerifyPassword(password, getByUserNameResult.Value.PasswordHash);
+                if (isPasswordVerified  == false)
                 {
-                    return Result<string>.Failure("Failed to login");
+                    return Result<string>.Failure(AccountError.InvalidPassword);
                 }
-                string token = _jwtProvider.GenerateJwtToken(resultRepository.Value.UserName, resultRepository.Value.Email);
+                string token = _jwtProvider.GenerateJwtToken(getByUserNameResult.Value.UserName, getByUserNameResult.Value.Email);
                 return Result<string>.Success(token);
             }
-            return Result<string>.Failure(resultRepository.ErrorMessage);
+            return Result<string>.Failure(getByUserNameResult.ExecutionError);
         }
     }
 }

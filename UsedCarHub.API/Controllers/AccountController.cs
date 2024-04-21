@@ -5,11 +5,11 @@ namespace UsedCarHub.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UsersController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        public AccountController(IUserService userService)
         {
             _userService = userService;
         }
@@ -22,7 +22,7 @@ namespace UsedCarHub.API.Controllers
             {
                 return Ok(result.Value);
             }
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(result.ExecutionError.Description);
         }
 
         [HttpGet("login")]
@@ -35,7 +35,7 @@ namespace UsedCarHub.API.Controllers
                 return Ok(token);
             }
 
-            return BadRequest(resultLogin.ErrorMessage);
+            return BadRequest(resultLogin.ExecutionError.Description);
         }
     }
 }
