@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UsedCarHub.Common.Exceptions;
+using UsedCarHub.Common.Results;
 using UsedCarHub.Domain;
 using UsedCarHub.Domain.Entities;
 using UsedCarHub.Repository.Interfaces;
@@ -15,38 +15,46 @@ namespace UsedCarHub.Repository.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<UserEntity> CreateAsync(UserEntity user)
+        public async Task<Result<UserEntity>> AddAsync(UserEntity user)
         {
             if (await _dbContext.Users.AnyAsync(x => x.Email == user.Email))
             {
-                throw new BadRequestException("A user with this email already exists");
-            }
-            if (user.FirstName == null )
-            {
-                throw new BadRequestException("First name is required");
-            }
-            if (user.LastName == null)
-            {
-                throw new BadRequestException("Last name is required");
+                return Result<UserEntity>.Failure("A user with this email already exists");
             }
             if (user.Email == null)
             {
-                throw new BadRequestException("Email is required");
+                return Result<UserEntity>.Failure("Email is required");
+            }
+            if (await _dbContext.Users.AnyAsync(x => x.UserName == user.UserName))
+            {
+                return Result<UserEntity>.Failure("A user with this username already exists");
             }
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
-            return user;
+            return Result<UserEntity>.Success(user);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<Result<UserEntity>> GetByUserNameAsync(string userName)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            if (user == null)
+            {
+                return Result<UserEntity>.Failure("There is no user with such username");
+            }
+
+            return Result<UserEntity>.Success(user);
+        }
+
+        public async Task<Result<UserEntity>> DeleteAsync(int id)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
-                throw new NotFoundException("The user with this Id does not exist");
+                return Result<UserEntity>.Failure("The user with this Id does not exist");
             }
             _dbContext.Users.Remove(user);
             await _dbContext.SaveChangesAsync();
+            return Result<UserEntity>.Success(user);
         }
 
         public async Task<IEnumerable<UserEntity>> GetAllAsync()
@@ -54,14 +62,14 @@ namespace UsedCarHub.Repository.Repositories
             return await _dbContext.Users.AsNoTracking().ToListAsync();
         }
 
-        public async Task<UserEntity> GetAsync(int id)
+        public async Task<Result<UserEntity>> GetAsync(int id)
         {
             var user = await _dbContext.Users.AsNoTracking().Include(x => x.CarsForSale).FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
-                throw new NotFoundException("The user with this Id does not exist");
+                return Result<UserEntity>.Failure("The user with this Id does not exist");
             }
-            return user;
+            return Result<UserEntity>.Success(user);
         }
 
         public async Task<IEnumerable<UserEntity>> GetWithCarsAsync()

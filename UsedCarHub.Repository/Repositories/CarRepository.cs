@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UsedCarHub.Common.Exceptions;
+using UsedCarHub.Common.Results;
 using UsedCarHub.Domain;
 using UsedCarHub.Domain.Entities;
 using UsedCarHub.Repository.Interfaces;
@@ -15,34 +15,35 @@ namespace UsedCarHub.Repository.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<CarEntity> CreateAsync(CarEntity car)
+        public async Task<Result<CarEntity>> AddAsync(CarEntity car)
         {
             if (await _dbContext.Cars.AnyAsync(c => c.RegistrationNumber == car.RegistrationNumber))
             {
-                throw new BadRequestException("A car with such reg. number already exists");
+                return Result<CarEntity>.Failure("A car with such reg. number already exists");
             }
             if (car.RegistrationNumber == null)
             {
-                throw new BadRequestException("Registration number is required");
+                return Result<CarEntity>.Failure("Registration number is required");
             }
             if (car.Model == null)
             {
-                throw new BadRequestException("Model is required");
+                return Result<CarEntity>.Failure("Model is required");
             }
             await _dbContext.Cars.AddAsync(car);
             await _dbContext.SaveChangesAsync();
-            return car;
+            return Result<CarEntity>.Success(car);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<Result<CarEntity>> DeleteAsync(int id)
         {
             var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == id);
             if (car == null)
             {
-                throw new NotFoundException("The car with this Id does not exist");
+                return Result<CarEntity>.Failure("The car with this Id does not exist");
             }
             _dbContext.Cars.Remove(car);
             await _dbContext.SaveChangesAsync();
+            return Result<CarEntity>.Success(car);
         }
 
         public async Task<IEnumerable<CarEntity>> GetAllAsync()
@@ -50,14 +51,14 @@ namespace UsedCarHub.Repository.Repositories
             return await _dbContext.Cars.AsNoTracking().ToListAsync();
         }
 
-        public async Task<CarEntity> GetAsync(int id)
+        public async Task<Result<CarEntity>> GetAsync(int id)
         {
             var car = await _dbContext.Cars.AsNoTracking().Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
             if (car == null)
             {
-                throw new NotFoundException("The car with this Id does not exist");
+                return Result<CarEntity>.Failure("The car with this Id does not exist");
             }
-            return car;
+            return Result<CarEntity>.Success(car);
         }
 
         public async Task<IEnumerable<CarEntity>> GetWithOwnerAsync()

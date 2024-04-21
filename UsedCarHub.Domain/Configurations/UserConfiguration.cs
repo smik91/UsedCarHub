@@ -13,9 +13,12 @@ namespace UsedCarHub.Domain.Configurations
             builder.Property(u => u.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(u => u.FirstName).IsRequired();
-            builder.Property(u => u.LastName).IsRequired();
-            builder.Property(u => u.Email).IsRequired();
+            builder.Property(u => u.FirstName).IsRequired(false);
+            builder.Property(u =>u.LastName).IsRequired(false);
+
+            builder.Property(u => u.UserName).IsRequired(true);
+            builder.Property(u => u.Email).IsRequired(true);
+            builder.Property(x => x.PasswordHash).IsRequired(true);
         }
     }
 }
