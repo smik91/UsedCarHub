@@ -32,7 +32,15 @@ namespace UsedCarHub.API.Controllers
             if (resultLogin.IsSuccess)
             {
                 string token = resultLogin.Value;
-                return Ok(token);
+                
+                Response.Cookies.Append("jwtToken", token, new CookieOptions
+                {
+                    HttpOnly = true, 
+                    SameSite = SameSiteMode.None,
+                    Secure = true 
+                });
+        
+                return Ok("Login successful");
             }
 
             return BadRequest(resultLogin.ExecutionError.Description);
