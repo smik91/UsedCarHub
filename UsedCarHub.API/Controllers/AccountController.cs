@@ -7,17 +7,17 @@ namespace UsedCarHub.API.Controllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IAccountService _accountService;
 
-        public AccountController(IUserService userService)
+        public AccountController(IAccountService accountService)
         {
-            _userService = userService;
+            _accountService = accountService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(string userName, string email, string password)
         {
-            var result = await _userService.RegisterAsync(userName, email, password);
+            var result = await _accountService.RegisterAsync(userName, email, password);
             if (result.IsSuccess)
             {
                 return Ok(result.Value);
@@ -28,16 +28,17 @@ namespace UsedCarHub.API.Controllers
         [HttpGet("login")]
         public async Task<IActionResult> Login(string userName,string password)
         {
-            var resultLogin = await _userService.LoginAsync(userName, password);
+            var resultLogin = await _accountService.LoginAsync(userName, password);
             if (resultLogin.IsSuccess)
             {
                 string token = resultLogin.Value;
                 
-                Response.Cookies.Append("jwtToken", token, new CookieOptions
+                Response.Cookies.Append("usedCarHubId", token, new CookieOptions
                 {
                     HttpOnly = true, 
                     SameSite = SameSiteMode.None,
-                    Secure = true 
+                    Secure = true,
+                    MaxAge = TimeSpan.FromHours(12)
                 });
         
                 return Ok("Login successful");
