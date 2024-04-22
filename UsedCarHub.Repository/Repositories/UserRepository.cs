@@ -43,7 +43,7 @@ namespace UsedCarHub.Repository.Repositories
             await _dbContext.SaveChangesAsync();
             return Result<UserEntity>.Success(user);
         }
-
+        
         public async Task<Result<UserEntity>> GetByUserNameAsync(string userName)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
