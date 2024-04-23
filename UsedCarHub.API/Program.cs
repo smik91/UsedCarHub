@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using UsedCarHub.BusinessLogic.AutoMapperConfiguration;
 using UsedCarHub.BusinessLogic.Interfaces;
 using UsedCarHub.BusinessLogic.Services;
 using UsedCarHub.Common.Auth;
@@ -30,6 +31,7 @@ namespace UsedCarHub.API
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddAutoMapper(typeof(AppMappingProfile));
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

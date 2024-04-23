@@ -1,3 +1,4 @@
+using AutoMapper;
 using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
 using UsedCarHub.Common.Errors;
@@ -9,10 +10,12 @@ namespace UsedCarHub.BusinessLogic.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
         
         public async Task<Result<UserDto>> GetByUserName(string userName)
@@ -20,14 +23,7 @@ namespace UsedCarHub.BusinessLogic.Services
             var findByUsernameResult = await _userRepository.GetByUserNameAsync(userName);
             if (findByUsernameResult.IsSuccess)
             {
-                // ЗАЮЗАТЬ АВТОМАППЕР(РАЗОБРАТЬСЯ ПОЗЖЕ)
-                UserDto userDto = new UserDto();
-                userDto.Id = findByUsernameResult.Value.Id;
-                userDto.UserName = findByUsernameResult.Value.UserName;
-                userDto.Email = findByUsernameResult.Value.Email;
-                userDto.FirstName = findByUsernameResult.Value.FirstName;
-                userDto.LastName = findByUsernameResult.Value.LastName;
-                // --------------------------
+                var userDto = _mapper.Map<UserDto>(findByUsernameResult.Value);
                 return Result<UserDto>.Success(userDto);
             }
 
