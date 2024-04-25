@@ -18,9 +18,10 @@ namespace UsedCarHub.API
             builder.Services.AddCustomServices();
             builder.Services.AddAuthenticationServices(builder.Configuration);
             builder.Services.AddAutoMapper(typeof(AppMappingProfile));
-            
-            var connection = builder.Configuration.GetConnectionString(name: "DefaultConnectionString");
-            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connection));
+
+            var connection = builder.Configuration.GetConnectionString(name: "PostgreSqlConnectionString");
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
+
 
             var app = builder.Build();
 

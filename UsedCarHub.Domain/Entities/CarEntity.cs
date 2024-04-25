@@ -14,8 +14,6 @@ namespace UsedCarHub.Domain.Entities
         public int EngineCapacity { get; set; }
         public int Mileage { get; set; }
         public string Description { get; set; }
-
-        //Relationships
         public UserEntity Owner { get; set; }
         public int OwnerId { get; set; }
     }
