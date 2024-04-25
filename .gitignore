@@ -3,4 +3,6 @@ bin
 obj
 .idea
 .vscode
+Dockerfile
+.dockerignore
 
