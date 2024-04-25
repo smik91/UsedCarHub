@@ -16,7 +16,7 @@ namespace UsedCarHub.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddCustomServices();
-            builder.Services.AddCustomAuthentication(builder.Configuration);
+            builder.Services.AddAuthenticationServices(builder.Configuration);
             builder.Services.AddAutoMapper(typeof(AppMappingProfile));
             
             var connection = builder.Configuration.GetConnectionString(name: "DefaultConnectionString");

@@ -23,7 +23,7 @@ namespace UsedCarHub.API.Extensions
             services.AddScoped<IUserService, UserService>();
         }
 
-        public static void AddCustomAuthentication(this IServiceCollection services,IConfiguration configuration)
+        public static void AddAuthenticationServices(this IServiceCollection services,IConfiguration configuration)
         {
             services.AddAuthentication(options =>
             {
