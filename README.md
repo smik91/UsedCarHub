@@ -8,6 +8,10 @@
   <img src="https://img.shields.io/github/license/smik91/UsedCarHub" alt="GitHub license">
 </p>
 
+<p align="center">
+  <em>Please note: The Web-API is currently under development and will be further developed in the future.</em>
+</p>
+
 <p align="center">Welcome to <strong>UsedCarHub</strong> – your platform for convenient buying and selling of used cars! This is a <strong>backend</strong> project written in C# .NET 8.0, which allows users to register, list their cars for sale, and enjoy a user-friendly interface for searching and selecting the perfect car.</p>
 
 <h2 align="center">Features</h2>
