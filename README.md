@@ -26,9 +26,10 @@
 <h2 align="center">Technologies</h2>
 
 <ul>
-  <li><strong>C# .NET 8.0</strong></li>
+  <li><strong>.NET 8.0</strong></li>
   <li><strong>ASP.NET Core</strong></li>
   <li><strong>Entity Framework Core</strong></li>
+  <li><strong>PostgreSQL</strong></li>
 </ul>
 
 <h2 align="center">Installation and Running</h2>
