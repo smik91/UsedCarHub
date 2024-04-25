@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
+using UsedCarHub.API.Extensions;
+using UsedCarHub.BusinessLogic.AutoMapperConfiguration;
 using UsedCarHub.Domain;
-using UsedCarHub.Repository.Interfaces;
-using UsedCarHub.Repository.Repositories;
-namespace UsedCarHub
+
+namespace UsedCarHub.API
 {
     public class Program
     {
@@ -10,16 +12,16 @@ namespace UsedCarHub
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<ICarRepository,CarRepository>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddCustomServices();
+            builder.Services.AddAuthenticationServices(builder.Configuration);
+            builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
-            var connection = builder.Configuration.GetConnectionString(name: "DefaultConnectionString");
-            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connection));
+            var connection = builder.Configuration.GetConnectionString(name: "PostgreSqlConnectionString");
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
+
 
             var app = builder.Build();
 
@@ -29,9 +31,20 @@ namespace UsedCarHub
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.None,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
+            
             app.UseHttpsRedirection();
 
+            app.UseCookieProvider();
+            
+            app.UseAuthentication();
+            
             app.UseAuthorization();
 
             app.MapControllers();
