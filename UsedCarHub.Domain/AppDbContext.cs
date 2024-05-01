@@ -1,20 +1,26 @@
-﻿using UsedCarHub.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using UsedCarHub.Domain.Entities;
+using UsedCarHub.Common;
 using UsedCarHub.Domain.Configurations;
-using Microsoft.EntityFrameworkCore;
 
 namespace UsedCarHub.Domain
 {
-    public sealed class AppDbContext : DbContext
+    public sealed class AppDbContext : IdentityDbContext<UserEntity, RoleEntity, string,
+        IdentityUserClaim<string>, UserRoleEntity, IdentityUserLogin<string>,IdentityRoleClaim<string>,
+        IdentityUserToken<string>>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<CarEntity> Cars { get; set; }
-        public DbSet<UserEntity> Users { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new CarConfiguration());
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new CarConfiguration());
+            modelBuilder.ApplyUtcDateTimeConverter();
         }
     }
 }

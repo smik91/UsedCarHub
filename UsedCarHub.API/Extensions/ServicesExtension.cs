@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using UsedCarHub.BusinessLogic.Interfaces;
 using UsedCarHub.BusinessLogic.Services;
-using UsedCarHub.Common.Auth;
-using UsedCarHub.Common.Interfaces;
 using UsedCarHub.Repository.Interfaces;
 using UsedCarHub.Repository.Repositories;
 
@@ -16,11 +14,7 @@ namespace UsedCarHub.API.Extensions
         public static void AddCustomServices(this IServiceCollection services)
         {
             services.AddScoped<ICarRepository, CarRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<IJwtProvider, JwtProvider>();
-            services.AddScoped<IUserService, UserService>();
         }
 
         public static void AddAuthenticationServices(this IServiceCollection services,IConfiguration configuration)

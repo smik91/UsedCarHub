@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UsedCarHub.Domain.Entities;
 
 namespace UsedCarHub.Domain.Configurations
@@ -8,17 +8,9 @@ namespace UsedCarHub.Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
-            builder.HasKey(u => u.Id);
-
-            builder.Property(u => u.Id)
-                .ValueGeneratedOnAdd();
-            
-            builder.Property(u => u.UserName).IsRequired();
-            builder.Property(u => u.Email).IsRequired();
-            builder.Property(u => u.PasswordHash).IsRequired();
-
-            builder.Property(u => u.FirstName).IsRequired(false);
-            builder.Property(u => u.LastName).IsRequired(false);
+            builder.HasMany(u => u.UserRoles)
+                .WithOne(ur => ur.User)
+                .HasForeignKey(ur => ur.UserId).IsRequired();
         }
     }
 }

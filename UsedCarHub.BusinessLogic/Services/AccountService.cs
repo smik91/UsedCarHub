@@ -1,8 +1,9 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
 using UsedCarHub.Common.Errors;
-using UsedCarHub.Common.Interfaces;
 using UsedCarHub.Common.Results;
 using UsedCarHub.Domain.Entities;
 using UsedCarHub.Repository.Interfaces;
@@ -11,48 +12,42 @@ namespace UsedCarHub.BusinessLogic.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly IPasswordHasher _passwordHasher;
-        private readonly IUserRepository _userRepository;
-        private readonly IJwtProvider _jwtProvider;
-        private readonly IMapper _mapper; 
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        private readonly ITokenService _tokenService;
 
-        public AccountService(IPasswordHasher passwordHasher,IUserRepository userRepository,IJwtProvider jwtProvider,IMapper mapper)
+        public AccountService(IUnitOfWork unitOfWork,IMapper mapper,ITokenService tokenService)
         {
-            _passwordHasher = passwordHasher;
-            _userRepository = userRepository;
-            _jwtProvider = jwtProvider;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
-        
-        public async Task<Result<RegisterUserDto>> RegisterAsync(string userName, string email, string password)
+
+        public async Task<Result<RegisterUserDto>> RegisterAsync(RegisterUserDto registerUserDto)
         {
-            var hashedPassword = _passwordHasher.HashPassword(password);
-            var registerUserDto = new RegisterUserDto(userName, email, hashedPassword);
+            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.UserName == registerUserDto.UserName))
+                return Result<RegisterUserDto>.Failure(AccountError.SameUserName);
+            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.Email == registerUserDto.Email))
+                return Result<RegisterUserDto>.Failure(AccountError.SameEmail);
+            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.))
             var user = _mapper.Map<UserEntity>(registerUserDto);
-            var addAsyncResult = await _userRepository.AddAsync(user);
-            if (addAsyncResult.IsSuccess)
-            {
-                registerUserDto = _mapper.Map<RegisterUserDto>(addAsyncResult.Value);
-                return Result<RegisterUserDto>.Success(registerUserDto);
-            }
-
-            return Result<RegisterUserDto>.Failure(addAsyncResult.ExecutionError);
+            var result = await _unitOfWork.UserManager.CreateAsync(user, registerUserDto.Password);
+            
         }
 
-        public async Task<Result<string>> LoginAsync(string userName, string password)
+        public Task<Result<string>> LoginAsync(LoginUserDto loginUserDto)
         {
-            var getByUserNameResult = await _userRepository.GetByUserNameAsync(userName);
-            if (getByUserNameResult.IsSuccess)
-            {
-                var isPasswordVerified  = _passwordHasher.VerifyPassword(password, getByUserNameResult.Value.PasswordHash);
-                if (isPasswordVerified  == false)
-                {
-                    return Result<string>.Failure(AccountError.InvalidPassword);
-                }
-                string token = _jwtProvider.GenerateJwtToken(getByUserNameResult.Value.UserName, getByUserNameResult.Value.Email);
-                return Result<string>.Success(token);
-            }
-            return Result<string>.Failure(getByUserNameResult.ExecutionError);
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<UserDto>> UpdateAsync(string userId, UpdateUserDto updateUserDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<UserInfoDto>> GetInfoAsync(string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

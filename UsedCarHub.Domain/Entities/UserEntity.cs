@@ -1,13 +1,13 @@
-﻿namespace UsedCarHub.Domain.Entities
+using Microsoft.AspNetCore.Identity;
+
+namespace UsedCarHub.Domain.Entities
 {
-    public sealed class UserEntity
+    public sealed class UserEntity : IdentityUser
     {
-        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string UserName { get; set; }
         public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public List<CarEntity> CarsForSale { get; set; }
+        public ICollection<UserRoleEntity> UserRoles { get; set; }
+        public ICollection<CarEntity> CarsForSale { get; set; }
     }
 }

@@ -1,8 +1,8 @@
-﻿using UsedCarHub.Domain.Enums;
+using UsedCarHub.Domain.Enums;
 
 namespace UsedCarHub.Domain.Entities
 {
-    public sealed class CarEntity
+    public class CarEntity
     {
         public int Id { get; set; }
         public string RegistrationNumber {  get; set; }
