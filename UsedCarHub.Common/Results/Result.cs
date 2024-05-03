@@ -6,13 +6,13 @@ namespace UsedCarHub.Common.Results
     {
         public T Value { get; }
         public bool IsSuccess { get; }
-        public Error ExecutionError { get; }
+        public IReadOnlyList<Error> ExecutionErrors { get; }
 
-        private Result(T value, bool isSuccess, Error executionError)
+        private Result(T value, bool isSuccess, IReadOnlyList<Error> errors)
         {
             Value = value;
             IsSuccess = isSuccess;
-            ExecutionError = executionError;
+            ExecutionErrors = errors;
         }
 
         public static Result<T> Success(T value)
@@ -20,9 +20,14 @@ namespace UsedCarHub.Common.Results
             return new Result<T>(value, true, null);
         }
 
-        public static Result<T> Failure(Error executionError)
+        public static Result<T> Failure(Error error)
         {
-            return new Result<T>(default(T), false, executionError);
+            return new Result<T>(default(T), false, new List<Error> { error });
+        }
+        
+        public static Result<T> Failure(IEnumerable<Error> errors)
+        {
+            return new Result<T>(default(T), false, errors.ToList());
         }
     }
 }

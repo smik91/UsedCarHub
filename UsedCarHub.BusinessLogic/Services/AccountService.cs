@@ -24,28 +24,37 @@ namespace UsedCarHub.BusinessLogic.Services
 
         public async Task<Result<UserDto>> RegisterAsync(RegisterUserDto registerUserDto)
         {
-            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.UserName == registerUserDto.UserName))
-                return Result<UserDto>.Failure(AccountError.SameUserName);
-            
             if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.Email == registerUserDto.Email))
                 return Result<UserDto>.Failure(AccountError.SameEmail);
-            
-            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.PhoneNumber == registerUserDto.PhoneNumber))
-                return Result<UserDto>.Failure(AccountError.SamePhone);
-            
+
+            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.UserName == registerUserDto.UserName))
+                return Result<UserDto>.Failure(AccountError.SameUserName);
+
             var user = _mapper.Map<UserEntity>(registerUserDto);
+
             var result = await _unitOfWork.UserManager.CreateAsync(user, registerUserDto.Password);
-            
+
             if (!result.Succeeded)
-                return Result<UserDto>.Failure(AccountError.Addition);
+            {
+                var errors = result.Errors.Select(error => new Error(error.Code, error.Description));
+                return Result<UserDto>.Failure(errors);
+            }
+
             var roleResult = await _unitOfWork.UserManager.AddToRoleAsync(user, "Purchaser");
+
             if (!roleResult.Succeeded)
-                return Result<UserDto>.Failure(AccountError.AdditionToRole);
-            return Result<UserDto>.Success(new UserDto
+            {
+                var errors = roleResult.Errors.Select(error => new Error(error.Code, error.Description));
+                return Result<UserDto>.Failure(errors);
+            }
+
+            var userDto = new UserDto
             {
                 UserName = registerUserDto.UserName,
                 Token = await _tokenService.CreateTokenAsync(user)
-            });
+            };
+
+            return Result<UserDto>.Success(userDto);
         }
 
         public async Task<Result<UserDto>> LoginAsync(LoginUserDto loginUserDto)
@@ -54,6 +63,7 @@ namespace UsedCarHub.BusinessLogic.Services
                 x.UserName == loginUserDto.UserName);
             if (user == null)
                 return Result<UserDto>.Failure(AccountError.NotFountByUserName);
+            
             var result = await _unitOfWork.SignInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, false);
             if (!result.Succeeded)
                 return Result<UserDto>.Failure(AccountError.InvalidPasswordOrUserName);

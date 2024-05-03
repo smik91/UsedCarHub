@@ -23,10 +23,10 @@ namespace UsedCarHub.API.Controllers
             {
                 return Ok(result.Value);
             }
-            return BadRequest(result.ExecutionError.Description);
+            return BadRequest(result.ExecutionErrors.Select(x=>x.Description));
         }
 
-        [HttpGet("login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserDto loginUserDto)
         {
             var resultLogin = await _accountService.LoginAsync(loginUserDto);
@@ -45,7 +45,7 @@ namespace UsedCarHub.API.Controllers
                 return Ok("Login successful");
             }
 
-            return BadRequest(resultLogin.ExecutionError.Description);
+            return BadRequest(resultLogin.ExecutionErrors.Select(x=>x.Description));
         }
     }
 }
