@@ -11,7 +11,7 @@ namespace UsedCarHub.Domain
         {
             if (await userManager.Users.AnyAsync()) return;
 
-            var userData = await File.ReadAllTextAsync("../Domain/UserSeed.json");
+            var userData = await File.ReadAllTextAsync("UserSeed.json");
             var users = JsonSerializer.Deserialize<List<UserEntity>>(userData);
             if (users == null) return;
 
@@ -30,9 +30,9 @@ namespace UsedCarHub.Domain
             foreach (var user in users)
             {
                 await userManager.CreateAsync(user, "12345");
-                await userManager.AddToRoleAsync(user, "Seller");
+                await userManager.AddToRoleAsync(user, "Purchaser");
                 if (user.PhoneNumber == "+11111111")
-                    await userManager.AddToRoleAsync(user, "Purchaser");
+                    await userManager.AddToRoleAsync(user, "Seller");
             }
 
             var admin = new UserEntity()
@@ -46,7 +46,7 @@ namespace UsedCarHub.Domain
             };
 
             await userManager.CreateAsync(admin, "123");
-            await userManager.AddToRolesAsync(admin, new[] { "Admin", "Seller", "Purchaser" });
+            await userManager.AddToRoleAsync(admin, "Admin");
         }
     }
 }

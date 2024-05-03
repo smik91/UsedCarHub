@@ -18,9 +18,9 @@ namespace UsedCarHub.Repository
             SignInManager = signInManager;
         }
         
-        public Task<bool> Commit()
+        public async Task<bool> Commit()
         {
-            throw new NotImplementedException();
+            return await _dbContext.SaveChangesAsync() > 0;
         }
     }
 }

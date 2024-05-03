@@ -1,28 +1,21 @@
 using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using UsedCarHub.API.Extensions;
-using UsedCarHub.BusinessLogic.AutoMapperConfiguration;
 using UsedCarHub.Domain;
+using UsedCarHub.Domain.Entities;
 
 namespace UsedCarHub.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddCustomServices();
-            builder.Services.AddAuthenticationServices(builder.Configuration);
-            builder.Services.AddAutoMapper(typeof(AppMappingProfile));
-
-            var connection = builder.Configuration.GetConnectionString(name: "PostgreSqlConnectionString");
-            builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
-
-
+            builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -48,7 +41,15 @@ namespace UsedCarHub.API
             app.UseAuthorization();
 
             app.MapControllers();
+            
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
 
+            var db = services.GetRequiredService<AppDbContext>();
+            var roleManager = services.GetRequiredService<RoleManager<RoleEntity>>();
+            var userManager = services.GetRequiredService<UserManager<UserEntity>>();
+            //await Seed.SeedUsers(userManager, roleManager);
+            
             app.Run();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
 
 namespace UsedCarHub.API.Controllers
@@ -15,9 +16,9 @@ namespace UsedCarHub.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(string userName, string email, string password)
+        public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
         {
-            var result = await _accountService.RegisterAsync(userName, email, password);
+            var result = await _accountService.RegisterAsync(registerUserDto);
             if (result.IsSuccess)
             {
                 return Ok(result.Value);
@@ -26,12 +27,12 @@ namespace UsedCarHub.API.Controllers
         }
 
         [HttpGet("login")]
-        public async Task<IActionResult> Login(string userName,string password)
+        public async Task<IActionResult> Login(LoginUserDto loginUserDto)
         {
-            var resultLogin = await _accountService.LoginAsync(userName, password);
+            var resultLogin = await _accountService.LoginAsync(loginUserDto);
             if (resultLogin.IsSuccess)
             {
-                string token = resultLogin.Value;
+                string token = resultLogin.Value.Token;
                 
                 Response.Cookies.Append("usedCarHubId", token, new CookieOptions
                 {
