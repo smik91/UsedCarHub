@@ -9,6 +9,7 @@ namespace UsedCarHub.BusinessLogic.AutoMapperConfiguration
         public AppMappingProfile()
         {
             CreateMap<UserEntity, RegisterUserDto>().ReverseMap();
+            CreateMap<UserEntity, UpdateUserDto>().ReverseMap();
         }
     }
 }

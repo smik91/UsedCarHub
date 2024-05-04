@@ -48,7 +48,7 @@ namespace UsedCarHub.API
             var db = services.GetRequiredService<AppDbContext>();
             var roleManager = services.GetRequiredService<RoleManager<RoleEntity>>();
             var userManager = services.GetRequiredService<UserManager<UserEntity>>();
-            //await Seed.SeedUsers(userManager, roleManager);
+            await Seed.SeedUsers(userManager, roleManager);
             
             app.Run();
         }

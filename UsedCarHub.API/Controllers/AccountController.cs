@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Azure;
 using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
 
@@ -42,10 +43,31 @@ namespace UsedCarHub.API.Controllers
                     MaxAge = TimeSpan.FromHours(12)
                 });
         
-                return Ok("Login successful");
+                return Ok(resultLogin.Value);
             }
 
             return BadRequest(resultLogin.ExecutionErrors.Select(x=>x.Description));
+        }
+        
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete(DeleteUserDto deleteUserDto)
+        {
+            var resultDelete = await _accountService.DeleteAsync(deleteUserDto);
+            if (resultDelete.IsSuccess)
+            {
+                return Ok(resultDelete.Value);
+            }
+
+            return BadRequest(resultDelete.ExecutionErrors.Select(x=>x.Description));
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> Update(string Id, UpdateUserDto updateUserDto)
+        {
+            var resultUpdate = await _accountService.UpdateAsync(Id, updateUserDto);
+            if (resultUpdate.IsSuccess)
+                return Ok(resultUpdate.Value);
+            return NotFound(resultUpdate.ExecutionErrors.Select(x => x.Description));
         }
     }
 }

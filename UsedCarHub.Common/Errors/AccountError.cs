@@ -11,7 +11,7 @@ namespace UsedCarHub.Common.Errors
         public static readonly Error SamePhone =
             new Error("Account.SamePhone", "A user with this phone number already exists");
 
-        public static readonly Error NotFountByUserName =
+        public static readonly Error NotFoundByUserName =
             new Error("Account.NameNotFound", "There is no user with such username");
 
         public static readonly Error NotFoundById =
