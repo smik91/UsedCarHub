@@ -8,12 +8,15 @@ using UsedCarHub.Domain.Configurations;
 namespace UsedCarHub.Domain
 {
     public sealed class AppDbContext : IdentityDbContext<UserEntity, RoleEntity, string,
-        IdentityUserClaim<string>, UserRoleEntity, IdentityUserLogin<string>,IdentityRoleClaim<string>,
+        IdentityUserClaim<string>, UserRoleEntity, IdentityUserLogin<string>, IdentityRoleClaim<string>,
         IdentityUserToken<string>>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
 
         public DbSet<CarEntity> Cars { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

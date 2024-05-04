@@ -24,7 +24,7 @@ namespace UsedCarHub.Common.Results
         {
             return new Result<T>(default(T), false, new List<Error> { error });
         }
-        
+
         public static Result<T> Failure(IEnumerable<Error> errors)
         {
             return new Result<T>(default(T), false, errors.ToList());

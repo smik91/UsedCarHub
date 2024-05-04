@@ -8,13 +8,16 @@ namespace UsedCarHub.Common
     public static class UtcDateAnnotation
     {
         private const String IsUtcAnnotation = "IsUtc";
+
         private static readonly ValueConverter<DateTime, DateTime> UtcConverter =
             new ValueConverter<DateTime, DateTime>(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
         private static readonly ValueConverter<DateTime?, DateTime?> UtcNullableConverter =
-            new ValueConverter<DateTime?, DateTime?>(v => v, v => v == null ? v : DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
+            new ValueConverter<DateTime?, DateTime?>(v => v,
+                v => v == null ? v : DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
 
-        public static PropertyBuilder<TProperty> IsUtc<TProperty>(this PropertyBuilder<TProperty> builder, Boolean isUtc = true) =>
+        public static PropertyBuilder<TProperty> IsUtc<TProperty>(this PropertyBuilder<TProperty> builder,
+            Boolean isUtc = true) =>
             builder.HasAnnotation(IsUtcAnnotation, isUtc);
 
         public static Boolean IsUtc(this IMutableProperty property) =>

@@ -22,7 +22,7 @@ namespace UsedCarHub.BusinessLogic.Services
             _expiresHours = Convert.ToInt32(configuration["JWT:ExpiresHours"]);
             _userManager = userManager;
         }
-        
+
         public async Task<string> CreateTokenAsync(UserEntity user)
         {
             var claims = new List<Claim>

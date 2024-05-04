@@ -29,7 +29,7 @@ namespace UsedCarHub.Domain
 
             foreach (var user in users)
             {
-                await userManager.CreateAsync(user, "12345");
+                await userManager.CreateAsync(user, "12345Chupakabra");
                 await userManager.AddToRoleAsync(user, "Purchaser");
                 if (user.PhoneNumber == "+11111111")
                     await userManager.AddToRoleAsync(user, "Seller");
@@ -40,12 +40,14 @@ namespace UsedCarHub.Domain
                 UserName = "admin",
                 FirstName = "Admin",
                 LastName = "Admin",
+                Email = "admin10@gmail.com",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true,
-                TwoFactorEnabled = false
+                TwoFactorEnabled = false,
+                PhoneNumber = "+22222222"
             };
 
-            await userManager.CreateAsync(admin, "123");
+            await userManager.CreateAsync(admin, "12345Admin");
             await userManager.AddToRoleAsync(admin, "Admin");
         }
     }

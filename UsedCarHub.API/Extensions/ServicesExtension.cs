@@ -18,7 +18,8 @@ namespace UsedCarHub.API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddDbContext<AppDbContext>(options => options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICarRepository, CarRepository>();
@@ -26,13 +27,11 @@ namespace UsedCarHub.API.Extensions
             services.AddAutoMapper(typeof(AppMappingProfile).Assembly);
             return services;
         }
-        
+
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddIdentityCore<UserEntity>(opt =>
-                {
-                    opt.Password.RequireNonAlphanumeric = false;
-                }).AddRoles<RoleEntity>().AddRoleManager<RoleManager<RoleEntity>>()
+            services.AddIdentityCore<UserEntity>(opt => { opt.Password.RequireNonAlphanumeric = false; })
+                .AddRoles<RoleEntity>().AddRoleManager<RoleManager<RoleEntity>>()
                 .AddSignInManager<SignInManager<UserEntity>>().AddRoleValidator<RoleValidator<RoleEntity>>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
@@ -55,7 +54,7 @@ namespace UsedCarHub.API.Extensions
             {
                 opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
                 opt.AddPolicy("RequireSellerRole", policy => policy.RequireRole("Seller"));
-                opt.AddPolicy("RequirePurchaserRole",policy => policy.RequireRole("Purchaser"));
+                opt.AddPolicy("RequirePurchaserRole", policy => policy.RequireRole("Purchaser"));
             });
 
             return services;

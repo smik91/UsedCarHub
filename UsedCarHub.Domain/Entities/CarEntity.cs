@@ -5,7 +5,7 @@ namespace UsedCarHub.Domain.Entities
     public class CarEntity
     {
         public int Id { get; set; }
-        public string RegistrationNumber {  get; set; }
+        public string RegistrationNumber { get; set; }
         public int Price { get; set; }
         public Marks Mark { get; set; }
         public string Model { get; set; }

@@ -15,7 +15,7 @@ namespace UsedCarHub.BusinessLogic.Services
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
 
-        public AccountService(IUnitOfWork unitOfWork,IMapper mapper,ITokenService tokenService)
+        public AccountService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -63,7 +63,7 @@ namespace UsedCarHub.BusinessLogic.Services
                 x.UserName == loginUserDto.UserName);
             if (user == null)
                 return Result<UserDto>.Failure(AccountError.NotFountByUserName);
-            
+
             var result = await _unitOfWork.SignInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, false);
             if (!result.Succeeded)
                 return Result<UserDto>.Failure(AccountError.InvalidPasswordOrUserName);

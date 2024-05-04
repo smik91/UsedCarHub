@@ -19,6 +19,7 @@ namespace UsedCarHub.API.Middlewares
                 context.Response.Headers.Append("X-Xss-Protection", "1");
                 context.Response.Headers.Append("X-Frame-Options", "DENY");
             }
+
             await _next(context);
         }
     }
