@@ -22,14 +22,17 @@ namespace UsedCarHub.Repository.Repositories
             {
                 return Result<CarEntity>.Failure(CarError.SameRegNumber);
             }
+
             if (car.RegistrationNumber == null)
             {
                 return Result<CarEntity>.Failure(CarError.RegNumberIsNull);
             }
+
             if (car.Model == null)
             {
                 return Result<CarEntity>.Failure(CarError.ModelIsNull);
             }
+
             await _dbContext.Cars.AddAsync(car);
             await _dbContext.SaveChangesAsync();
             return Result<CarEntity>.Success(car);
@@ -42,6 +45,7 @@ namespace UsedCarHub.Repository.Repositories
             {
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
             }
+
             _dbContext.Cars.Remove(car);
             await _dbContext.SaveChangesAsync();
             return Result<CarEntity>.Success(car);
@@ -59,6 +63,7 @@ namespace UsedCarHub.Repository.Repositories
             {
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
             }
+
             return Result<CarEntity>.Success(car);
         }
 

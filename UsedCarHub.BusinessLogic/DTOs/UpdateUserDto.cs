@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UsedCarHub.BusinessLogic.DTOs
 {
-    public class RegisterUserDto
+    public class UpdateUserDto
     {
         [Required] 
         public string UserName { get; set; }

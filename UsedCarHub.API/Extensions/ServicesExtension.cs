@@ -1,36 +1,41 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using UsedCarHub.BusinessLogic.AutoMapperConfiguration;
 using UsedCarHub.BusinessLogic.Interfaces;
 using UsedCarHub.BusinessLogic.Services;
-using UsedCarHub.Common.Auth;
-using UsedCarHub.Common.Interfaces;
+using UsedCarHub.Domain;
+using UsedCarHub.Domain.Entities;
+using UsedCarHub.Repository;
 using UsedCarHub.Repository.Interfaces;
 using UsedCarHub.Repository.Repositories;
 
 namespace UsedCarHub.API.Extensions
 {
-    public static class ServicesExtension
+    static public class ApplicationServiceExtensions
     {
-        private static readonly IConfiguration _configuration;
-        public static void AddCustomServices(this IServiceCollection services)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddScoped<ICarRepository, CarRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<IJwtProvider, JwtProvider>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICarRepository, CarRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddAutoMapper(typeof(AppMappingProfile).Assembly);
+            return services;
         }
 
-        public static void AddAuthenticationServices(this IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,options =>
+            services.AddIdentityCore<UserEntity>(opt => { opt.Password.RequireNonAlphanumeric = false; })
+                .AddRoles<RoleEntity>().AddRoleManager<RoleManager<RoleEntity>>()
+                .AddSignInManager<SignInManager<UserEntity>>().AddRoleValidator<RoleValidator<RoleEntity>>()
+                .AddEntityFrameworkStores<AppDbContext>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
@@ -40,11 +45,19 @@ namespace UsedCarHub.API.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                    ValidIssuer = config["Jwt:Issuer"],
+                    ValidAudience = config["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
                 };
             });
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                opt.AddPolicy("RequireSellerRole", policy => policy.RequireRole("Seller"));
+                opt.AddPolicy("RequirePurchaserRole", policy => policy.RequireRole("Purchaser"));
+            });
+
+            return services;
         }
     }
 }

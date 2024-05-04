@@ -5,7 +5,10 @@ namespace UsedCarHub.BusinessLogic.Interfaces
 {
     public interface IAccountService
     {
-        Task<Result<RegisterUserDto>> RegisterAsync(string userName, string email, string password);
-        Task<Result<string>> LoginAsync(string userName, string password);
+        Task<Result<UserDto>> RegisterAsync(RegisterUserDto registerUserDto);
+        Task<Result<UserDto>> LoginAsync(LoginUserDto loginUserDto);
+        Task<Result<UpdateUserDto>> UpdateAsync(string userId, UpdateUserDto updateUserDto);
+        Task<Result<UserInfoDto>> GetInfoAsync(string userId);
+        Task<Result<string>> DeleteAsync(DeleteUserDto deleteUserDto);
     }
 }

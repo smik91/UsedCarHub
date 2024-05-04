@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Azure;
+using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
 
 namespace UsedCarHub.API.Controllers
@@ -15,23 +17,23 @@ namespace UsedCarHub.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(string userName, string email, string password)
+        public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
         {
-            var result = await _accountService.RegisterAsync(userName, email, password);
+            var result = await _accountService.RegisterAsync(registerUserDto);
             if (result.IsSuccess)
             {
                 return Ok(result.Value);
             }
-            return BadRequest(result.ExecutionError.Description);
+            return BadRequest(result.ExecutionErrors.Select(x=>x.Description));
         }
 
-        [HttpGet("login")]
-        public async Task<IActionResult> Login(string userName,string password)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginUserDto loginUserDto)
         {
-            var resultLogin = await _accountService.LoginAsync(userName, password);
+            var resultLogin = await _accountService.LoginAsync(loginUserDto);
             if (resultLogin.IsSuccess)
             {
-                string token = resultLogin.Value;
+                string token = resultLogin.Value.Token;
                 
                 Response.Cookies.Append("usedCarHubId", token, new CookieOptions
                 {
@@ -41,10 +43,31 @@ namespace UsedCarHub.API.Controllers
                     MaxAge = TimeSpan.FromHours(12)
                 });
         
-                return Ok("Login successful");
+                return Ok(resultLogin.Value);
             }
 
-            return BadRequest(resultLogin.ExecutionError.Description);
+            return BadRequest(resultLogin.ExecutionErrors.Select(x=>x.Description));
+        }
+        
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete(DeleteUserDto deleteUserDto)
+        {
+            var resultDelete = await _accountService.DeleteAsync(deleteUserDto);
+            if (resultDelete.IsSuccess)
+            {
+                return Ok(resultDelete.Value);
+            }
+
+            return BadRequest(resultDelete.ExecutionErrors.Select(x=>x.Description));
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> Update(string Id, UpdateUserDto updateUserDto)
+        {
+            var resultUpdate = await _accountService.UpdateAsync(Id, updateUserDto);
+            if (resultUpdate.IsSuccess)
+                return Ok(resultUpdate.Value);
+            return NotFound(resultUpdate.ExecutionErrors.Select(x => x.Description));
         }
     }
 }

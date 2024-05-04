@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UsedCarHub.Domain.Entities;
 
 namespace UsedCarHub.Domain.Configurations
@@ -18,7 +18,7 @@ namespace UsedCarHub.Domain.Configurations
             builder.Property(c => c.Model).IsRequired();
 
             builder.HasOne(c => c.Owner)
-                .WithMany(o => o.CarsForSale)
+                .WithMany(u => u.CarsForSale)
                 .HasForeignKey(c => c.OwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
