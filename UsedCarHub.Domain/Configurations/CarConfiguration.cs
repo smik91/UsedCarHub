@@ -12,15 +12,14 @@ namespace UsedCarHub.Domain.Configurations
 
             builder.Property(c => c.Id)
                 .ValueGeneratedOnAdd();
-
-            builder.Property(c => c.RegistrationNumber).IsRequired();
+            builder.Property(c => c.RegistrationNumber).IsRequired(false);
+            builder.Property(c => c.VIN).IsRequired();
             builder.Property(c => c.Mark).IsRequired();
             builder.Property(c => c.Model).IsRequired();
-
-            builder.HasOne(c => c.Owner)
-                .WithMany(u => u.CarsForSale)
-                .HasForeignKey(c => c.OwnerId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(c => c.YearOfProduction).IsRequired();
+            builder.Property(c => c.TransmissionType).IsRequired();
+            builder.Property(c => c.EngineCapacity).IsRequired();
+            builder.Property(c => c.Mileage).IsRequired();
         }
     }
 }

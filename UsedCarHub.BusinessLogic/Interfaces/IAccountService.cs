@@ -9,6 +9,6 @@ namespace UsedCarHub.BusinessLogic.Interfaces
         Task<Result<UserDto>> LoginAsync(LoginUserDto loginUserDto);
         Task<Result<UpdateUserDto>> UpdateAsync(string userId, UpdateUserDto updateUserDto);
         Task<Result<UserInfoDto>> GetInfoAsync(string userId);
-        Task<Result<string>> DeleteAsync(DeleteUserDto deleteUserDto);
+        Task<Result<string>> DeleteAsync(string userId);
     }
 }

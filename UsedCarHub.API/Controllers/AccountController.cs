@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Azure;
 using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
 
@@ -49,16 +48,16 @@ namespace UsedCarHub.API.Controllers
             return BadRequest(resultLogin.ExecutionErrors.Select(x=>x.Description));
         }
         
-        [HttpPost("delete")]
-        public async Task<IActionResult> Delete(DeleteUserDto deleteUserDto)
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete(string Id)
         {
-            var resultDelete = await _accountService.DeleteAsync(deleteUserDto);
+            var resultDelete = await _accountService.DeleteAsync(Id);
             if (resultDelete.IsSuccess)
             {
                 return Ok(resultDelete.Value);
             }
 
-            return BadRequest(resultDelete.ExecutionErrors.Select(x=>x.Description));
+            return NotFound(resultDelete.ExecutionErrors.Select(x=>x.Description));
         }
 
         [HttpPut("update")]

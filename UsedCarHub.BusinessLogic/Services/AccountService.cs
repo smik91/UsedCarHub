@@ -80,17 +80,16 @@ namespace UsedCarHub.BusinessLogic.Services
             });
         }
         
-        public async Task<Result<string>> DeleteAsync(DeleteUserDto deleteUserDto)
+        public async Task<Result<string>> DeleteAsync(string userId)
         {
-            var user = await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x =>
-                x.UserName == deleteUserDto.UserName);
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user == null)
-                return Result<string>.Failure(AccountError.NotFoundByUserName);
+                return Result<string>.Failure(AccountError.NotFoundById);
 
             var result = await _unitOfWork.UserManager.DeleteAsync(user);
             if (!result.Succeeded)
                 return Result<string>.Failure(result.Errors.Select(x=> new Error(x.Code,x.Description)));
-            return Result<string>.Success($"user \"{deleteUserDto.UserName}\" was deleted");
+            return Result<string>.Success($"user \"{user.UserName}\" was deleted");
         }
 
         public async Task<Result<UpdateUserDto>> UpdateAsync(string userId, UpdateUserDto updateUserDto)
@@ -106,9 +105,13 @@ namespace UsedCarHub.BusinessLogic.Services
                 (x.Code, x.Code)));
         }
 
-        public Task<Result<UserInfoDto>> GetInfoAsync(string userId)
+        public async Task<Result<UserInfoDto>> GetInfoAsync(string userId)
         {
-            throw new NotImplementedException();
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<UserInfoDto>.Failure(AccountError.NotFoundById);
+            var userInfoDto = _mapper.Map<UserInfoDto>(user);
+            return Result<UserInfoDto>.Success(userInfoDto);
         }
     }
 }

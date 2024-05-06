@@ -14,19 +14,7 @@ namespace UsedCarHub.Domain
             var userData = await File.ReadAllTextAsync("../UsedCarHub.Domain/UserSeed.json");
             var users = JsonSerializer.Deserialize<List<UserEntity>>(userData);
             if (users == null) return;
-
-            var roles = new List<RoleEntity>
-            {
-                new RoleEntity { Name = "Admin" },
-                new RoleEntity { Name = "Seller" },
-                new RoleEntity { Name = "Purchaser" }
-            };
-
-            foreach (var role in roles)
-            {
-                await roleManager.CreateAsync(role);
-            }
-
+            
             foreach (var user in users)
             {
                 await userManager.CreateAsync(user, "12345Hello");
@@ -35,7 +23,7 @@ namespace UsedCarHub.Domain
                     await userManager.AddToRoleAsync(user, "Seller");
             }
             
-            /*var admin = new UserEntity
+            var admin = new UserEntity
             {
                 UserName = "admin",
                 FirstName = "Admin",
@@ -47,7 +35,7 @@ namespace UsedCarHub.Domain
                 TwoFactorEnabled = false
             };
             await userManager.CreateAsync(admin, "Admin100");
-            await userManager.AddToRolesAsync(admin, new[] { "Purchaser", "Seller", "Admin" });*/
+            await userManager.AddToRolesAsync(admin, new[] { "Purchaser", "Seller", "Admin" });
         }
     }
 }
