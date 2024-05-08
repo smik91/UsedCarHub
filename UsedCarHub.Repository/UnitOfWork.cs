@@ -29,7 +29,6 @@ namespace UsedCarHub.Repository
             }
             catch (DbUpdateException ex)
             {
-                // Обработка ошибок при сохранении изменений
                 return false;
             }
         }

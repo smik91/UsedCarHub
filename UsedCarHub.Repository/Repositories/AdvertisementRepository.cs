@@ -23,9 +23,9 @@ namespace UsedCarHub.Repository.Repositories
             return Result<AdvertisementEntity>.Success(advertisement);
         }
 
-        public async Task<Result<AdvertisementEntity>> DeleteAsync(int id)
+        public async Task<Result<AdvertisementEntity>> DeleteAsync(int advertisementId)
         {
-            var advertisement = await _dbContext.Advertisements.FirstOrDefaultAsync(x => x.Id == id);
+            var advertisement = await _dbContext.Advertisements.FirstOrDefaultAsync(x => x.Id == advertisementId);
             if (advertisement == null)
                 return Result<AdvertisementEntity>.Failure(AdvertisementError.NotFoundById);
             _dbContext.Advertisements.Remove(advertisement);
@@ -41,12 +41,12 @@ namespace UsedCarHub.Repository.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Result<AdvertisementEntity>> GetAsync(int id)
+        public async Task<Result<AdvertisementEntity>> GetAsync(int advertisementId)
         {
             var advertisement = await _dbContext.Advertisements.AsNoTracking()
                 .Include(x => x.SellerId)
                 .Include(x => x.Car)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == advertisementId);
             if (advertisement == null)
                 return Result<AdvertisementEntity>.Failure(AdvertisementError.NotFoundById);
             return Result<AdvertisementEntity>.Success(advertisement);

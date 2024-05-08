@@ -20,10 +20,10 @@ namespace UsedCarHub.Domain.Configurations
                 .WithMany(u => u.Advertisements)
                 .HasForeignKey(a => a.SellerId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            
             builder.HasOne(a => a.Car)
                 .WithOne(c => c.Advertisement)
-                .HasForeignKey<AdvertisementEntity>(a => a.CarId)
+                .HasForeignKey<CarEntity>(c => c.AdvertisementId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

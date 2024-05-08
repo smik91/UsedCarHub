@@ -5,8 +5,8 @@ namespace UsedCarHub.Repository.Interfaces
 {
     public interface ICarRepository
     {
-        public Task<Result<CarEntity>> GetAsync(int id);
-        public Task<Result<CarEntity>> DeleteAsync(int id);
+        public Task<Result<CarEntity>> GetAsync(int carId);
+        public Task<Result<CarEntity>> DeleteAsync(int carId);
         public Task<Result<CarEntity>> AddAsync(CarEntity car);
     }
 }

@@ -12,7 +12,7 @@ namespace UsedCarHub.Domain.Configurations
 
             builder.Property(c => c.Id)
                 .ValueGeneratedOnAdd();
-            builder.Property(c => c.RegistrationNumber).IsRequired(false);
+            builder.Property(c => c.RegistrationNumber).IsRequired();
             builder.Property(c => c.VIN).IsRequired();
             builder.Property(c => c.Mark).IsRequired();
             builder.Property(c => c.Model).IsRequired();

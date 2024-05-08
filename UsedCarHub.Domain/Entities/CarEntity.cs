@@ -11,8 +11,9 @@ namespace UsedCarHub.Domain.Entities
         public string Model { get; set; }
         public int YearOfProduction { get; set; }
         public Transmission TransmissionType { get; set; }
-        public int EngineCapacity { get; set; }
+        public float EngineCapacity { get; set; }
         public int Mileage { get; set; }
         public AdvertisementEntity Advertisement { get; set; }
+        public int AdvertisementId { get; set; }
     }
 }

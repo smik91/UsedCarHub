@@ -14,6 +14,7 @@ namespace UsedCarHub.BusinessLogic.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
+        private IAccountService _accountServiceImplementation;
 
         public AccountService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService)
         {
@@ -105,13 +106,18 @@ namespace UsedCarHub.BusinessLogic.Services
                 (x.Code, x.Code)));
         }
 
-        public async Task<Result<UserInfoDto>> GetInfoAsync(string userId)
+        public async Task<Result<InfoUserDto>> GetInfoAsync(string userId)
         {
             var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user == null)
-                return Result<UserInfoDto>.Failure(AccountError.NotFoundById);
-            var userInfoDto = _mapper.Map<UserInfoDto>(user);
-            return Result<UserInfoDto>.Success(userInfoDto);
+                return Result<InfoUserDto>.Failure(AccountError.NotFoundById);
+            var userInfoDto = _mapper.Map<InfoUserDto>(user);
+            return Result<InfoUserDto>.Success(userInfoDto);
+        }
+        
+        public Task<Result<string>> GiveSellerRole(string userId)
+        {
+            return _accountServiceImplementation.GiveSellerRole(userId);
         }
     }
 }

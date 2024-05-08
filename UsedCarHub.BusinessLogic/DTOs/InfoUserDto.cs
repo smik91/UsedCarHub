@@ -1,6 +1,6 @@
 namespace UsedCarHub.BusinessLogic.DTOs
 {
-    public class UserInfoDto
+    public class InfoUserDto
     {
         public string Id { get; set; }
         public string UserName { get; set; }

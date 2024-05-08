@@ -14,25 +14,20 @@ namespace UsedCarHub.BusinessLogic.Services
         private IAdvertisementService _advertisementServiceImplementation;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAdvertisementRepository _advertisementRepository;
-        private readonly ICarRepository _carRepository;
         private readonly IMapper _mapper;
 
-        public AdvertisementService(IUnitOfWork unitOfWork, IAdvertisementRepository advertisementRepository,ICarRepository carRepository, IMapper mapper)
+        public AdvertisementService(IUnitOfWork unitOfWork, IAdvertisementRepository advertisementRepository, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _advertisementRepository = advertisementRepository;
-            _carRepository = carRepository;
             _mapper = mapper;
         }
         
         public async Task<Result<AdvertisementDto>> AddAsync(AddAdvertisementDto addAdvertisementDto)
         {
             CarEntity car = _mapper.Map<CarEntity>(addAdvertisementDto.Car);
-            var carAddResult = await _carRepository.AddAsync(car);
-            if (!carAddResult.IsSuccess)
-                return Result<AdvertisementDto>.Failure(carAddResult.ExecutionErrors);
             var advertisement = _mapper.Map<AdvertisementEntity>(addAdvertisementDto);
-            advertisement.CarId = carAddResult.Value.Id;
+            advertisement.Car = car;
             var advertisementAddResult = await _advertisementRepository.AddAsync(advertisement);
             if (!advertisementAddResult.IsSuccess)
                 return Result<AdvertisementDto>.Failure(advertisementAddResult.ExecutionErrors);
@@ -47,17 +42,17 @@ namespace UsedCarHub.BusinessLogic.Services
             return Result<AdvertisementDto>.Success(advertisementDto);
         }
 
-        public Task<Result<UpdateAdvertisementDto>> UpdateAsync(string advertisementId, UpdateAdvertisementDto updateUserDto)
+        public Task<Result<UpdateAdvertisementDto>> UpdateAsync(int advertisementId, UpdateAdvertisementDto updateAdvertisementDto)
         {
-            return _advertisementServiceImplementation.UpdateAsync(advertisementId, updateUserDto);
+            return _advertisementServiceImplementation.UpdateAsync(advertisementId, updateAdvertisementDto);
         }
 
-        public Task<Result<AdvertisementInfoDto>> GetInfoAsync(string advertisementId)
+        public Task<Result<InfoAdvertisementDto>> GetInfoAsync(int advertisementId)
         {
             return _advertisementServiceImplementation.GetInfoAsync(advertisementId);
         }
 
-        public Task<Result<string>> DeleteAsync(string advertisementId)
+        public Task<Result<string>> DeleteAsync(int advertisementId)
         {
             return _advertisementServiceImplementation.DeleteAsync(advertisementId);
         }

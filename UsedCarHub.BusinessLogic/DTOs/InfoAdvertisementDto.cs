@@ -1,6 +1,6 @@
 namespace UsedCarHub.BusinessLogic.DTOs
 {
-    public class AdvertisementInfoDto
+    public class InfoAdvertisementDto
     {
         
     }

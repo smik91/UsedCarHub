@@ -16,17 +16,17 @@ namespace UsedCarHub.Repository.Repositories
             _dbContext = dbContext;
         }
         
-        public async Task<Result<CarEntity>> GetAsync(int id)
+        public async Task<Result<CarEntity>> GetAsync(int carId)
         {
-            var car = await _dbContext.Cars.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var car = await _dbContext.Cars.AsNoTracking().FirstOrDefaultAsync(x => x.Id == carId);
             if (car == null)
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
             return Result<CarEntity>.Success(car);
         }
 
-        public async Task<Result<CarEntity>> DeleteAsync(int id)
+        public async Task<Result<CarEntity>> DeleteAsync(int carId)
         {
-            var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == id);
+            var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == carId);
             if (car == null)
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
             _dbContext.Cars.Remove(car);
@@ -43,9 +43,9 @@ namespace UsedCarHub.Repository.Repositories
             return Result<CarEntity>.Success(car);
         }
 
-        public async Task<Result<CarEntity>> UpdateAsync(int id, CarEntity updateCar)
+        public async Task<Result<CarEntity>> UpdateAsync(int carId, CarEntity updateCar)
         {
-            var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == id);
+            var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == carId);
             if (car == null)
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
             if (await _dbContext.Cars.AnyAsync(x => x.VIN == updateCar.VIN))

@@ -8,6 +8,5 @@ namespace UsedCarHub.Domain.Entities
         public UserEntity Seller { get; set; }
         public string SellerId { get; set; }
         public CarEntity Car { get; set; }
-        public int CarId { get; set; }
     }
 }
