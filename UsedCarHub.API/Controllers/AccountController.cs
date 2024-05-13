@@ -16,6 +16,26 @@ namespace UsedCarHub.API.Controllers
             _accountService = accountService;
         }
 
+        /// <summary>
+        /// Account registration
+        /// </summary>
+        /// <param name="registerUserDto"></param>
+        /// <returns>A newly created user with Id, username and JWT Token</returns>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///      POST /Account/register
+        ///      {
+        ///        "UserName": "exampleUsername",
+        ///        "Email": "exampleeamil10@gmail.com",
+        ///        "Password": "PasswordExample1234",
+        ///        "FirstName": "Example",
+        ///        "LastName": "Example",
+        ///        "PhoneNumber": "+123456789"
+        ///      }
+        /// </remarks>
+        /// <response code="200">Returns a newly created user with Id, username and JWT Token</response>
+        /// <response code="400">Error</response>
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
         {
@@ -27,6 +47,11 @@ namespace UsedCarHub.API.Controllers
             return BadRequest(resultRegisterUser.ExecutionErrors.Select(x=>x.Description));
         }
 
+        /// <summary>
+        /// Log in to account
+        /// </summary>
+        /// <param name="loginUserDto"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserDto loginUserDto)
         {

@@ -66,7 +66,7 @@ namespace UsedCarHub.BusinessLogic.Services
             var resultDeleteAdvertisement = await _advertisementRepository.DeleteAsync(advertisementId);
             if (resultDeleteAdvertisement.IsSuccess)
             {
-                return Result<string>.Success($"Advertisement whith ID {advertisementId} was deleted");
+                return Result<string>.Success($"Advertisement with ID {advertisementId} was deleted");
             }
 
             return Result<string>.Failure(AdvertisementError.NotFoundById);
