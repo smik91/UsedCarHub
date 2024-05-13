@@ -30,14 +30,23 @@ namespace UsedCarHub.BusinessLogic.Services
             advertisement.Car = car;
             var advertisementAddResult = await _advertisementRepository.AddAsync(advertisement);
             if (!advertisementAddResult.IsSuccess)
+            {
                 return Result<AdvertisementDto>.Failure(advertisementAddResult.ExecutionErrors);
+            }
+
             var userGet =
                 await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x => x.Id == advertisement.SellerId);
             if (userGet == null)
+            {
                 return Result<AdvertisementDto>.Failure(AccountError.NotFoundById);
+            }
+
             userGet.Advertisements.Add(advertisement);
             if (!await _unitOfWork.Commit())
+            {
                 return Result<AdvertisementDto>.Failure(DbError.FailSaveChanges);
+            }
+
             var advertisementDto = _mapper.Map<AdvertisementDto>(advertisement);
             return Result<AdvertisementDto>.Success(advertisementDto);
         }
@@ -52,9 +61,15 @@ namespace UsedCarHub.BusinessLogic.Services
             return _advertisementServiceImplementation.GetInfoAsync(advertisementId);
         }
 
-        public Task<Result<string>> DeleteAsync(int advertisementId)
+        public async Task<Result<string>> DeleteAsync(int advertisementId)
         {
-            return _advertisementServiceImplementation.DeleteAsync(advertisementId);
+            var resultDeleteAdvertisement = await _advertisementRepository.DeleteAsync(advertisementId);
+            if (resultDeleteAdvertisement.IsSuccess)
+            {
+                return Result<string>.Success($"Advertisement whith ID {advertisementId} was deleted");
+            }
+
+            return Result<string>.Failure(AdvertisementError.NotFoundById);
         }
     }
 }

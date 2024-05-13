@@ -21,7 +21,9 @@ namespace UsedCarHub.API.Controllers
         {
             var resultRegisterUser = await _accountService.RegisterAsync(registerUserDto);
             if (resultRegisterUser.IsSuccess)
+            {
                 return Ok(resultRegisterUser.Value);
+            }
             return BadRequest(resultRegisterUser.ExecutionErrors.Select(x=>x.Description));
         }
 
@@ -53,7 +55,10 @@ namespace UsedCarHub.API.Controllers
         {
             var resultDeleteUser = await _accountService.DeleteAsync(userId);
             if (resultDeleteUser.IsSuccess)
+            {
                 return Ok(resultDeleteUser.Value);
+            }
+            
             return NotFound(resultDeleteUser.ExecutionErrors.Select(x=>x.Description));
         }
 
@@ -63,15 +68,24 @@ namespace UsedCarHub.API.Controllers
         {
             var resultUpdateUser = await _accountService.UpdateAsync(userId, updateUserDto);
             if (resultUpdateUser.IsSuccess)
+            {
                 return Ok(resultUpdateUser.Value);
+            }
+            
             return NotFound(resultUpdateUser.ExecutionErrors.Select(x => x.Description));
         }
 
         [HttpPost("sellerRole")]
-        [Authorize]
+        [Authorize(Policy = "RequirePurchaserRole")]
         public async Task<IActionResult> GiveSellerRole(string userId)
         {
-            return Ok();
+            var resultGiveRole = await _accountService.GiveSellerRole(userId);
+            if (resultGiveRole.IsSuccess)
+            {
+                return Ok(resultGiveRole.Value);
+            }
+            
+            return BadRequest(resultGiveRole.ExecutionErrors);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace UsedCarHub.Repository.Repositories
             var car = await _dbContext.Cars.AsNoTracking().FirstOrDefaultAsync(x => x.Id == carId);
             if (car == null)
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
+            
             return Result<CarEntity>.Success(car);
         }
 
@@ -29,6 +30,7 @@ namespace UsedCarHub.Repository.Repositories
             var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == carId);
             if (car == null)
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
+            
             _dbContext.Cars.Remove(car);
             await _dbContext.SaveChangesAsync();
             return Result<CarEntity>.Success(car);
@@ -38,6 +40,7 @@ namespace UsedCarHub.Repository.Repositories
         {
             if (await _dbContext.Cars.AnyAsync(x => x.VIN == car.VIN))
                 return Result<CarEntity>.Failure(CarError.SameVIN);
+            
             await _dbContext.Cars.AddAsync(car);
             await _dbContext.SaveChangesAsync();
             return Result<CarEntity>.Success(car);
@@ -48,8 +51,10 @@ namespace UsedCarHub.Repository.Repositories
             var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == carId);
             if (car == null)
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
+            
             if (await _dbContext.Cars.AnyAsync(x => x.VIN == updateCar.VIN))
                 return Result<CarEntity>.Failure(CarError.SameVIN);
+            
             car.RegistrationNumber = updateCar.RegistrationNumber;
             car.Mark = updateCar.Mark;
             car.Model = updateCar.Model;

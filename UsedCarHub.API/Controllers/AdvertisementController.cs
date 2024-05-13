@@ -20,27 +20,39 @@ namespace UsedCarHub.API.Controllers
         [Authorize(Policy = "RequireSellerRole")]
         public async Task<IActionResult> CreateAsync(AddAdvertisementDto addAdvertisementDto)
         {
-            var result = await _advertisementService.AddAsync(addAdvertisementDto);
-            if (result.IsSuccess)
-                return Ok(result.Value);
-            return BadRequest(result.ExecutionErrors.Select(x=>x.Description));
+            var resultAdd = await _advertisementService.AddAsync(addAdvertisementDto);
+            if (resultAdd.IsSuccess)
+            {
+                return Ok(resultAdd.Value);
+            }
+            
+            return BadRequest(resultAdd.ExecutionErrors.Select(x=>x.Description));
         }
         
         [HttpDelete("delete")]
         [Authorize(Policy = "RequireSellerRole")]
         public async Task<IActionResult> DeleteAsync(int advertisementId)
         {
-            var result = await _advertisementService.DeleteAsync(advertisementId);
-            if (result.IsSuccess)
-                return Ok(result.Value);
-            return NotFound(result.ExecutionErrors);
+            var resultDelete = await _advertisementService.DeleteAsync(advertisementId);
+            if (resultDelete.IsSuccess)
+            {
+                return Ok(resultDelete.Value);
+            }
+            
+            return NotFound(resultDelete.ExecutionErrors);
         }
 
         [HttpPut("update")]
         [Authorize(Policy = "RequireSellerRole")]
         public async Task<IActionResult> UpdateAsync(int advertisementId, UpdateAdvertisementDto updateAdvertisementDto)
         {
-            return Ok();
+            var resultUpdate = await _advertisementService.UpdateAsync(advertisementId, updateAdvertisementDto);
+            if (resultUpdate.IsSuccess)
+            {
+                return Ok(resultUpdate.Value);
+            }
+            
+            return NotFound(resultUpdate.ExecutionErrors);
         }
     }
 }
