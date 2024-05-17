@@ -113,7 +113,7 @@ namespace UsedCarHub.Domain.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("UsedCarHub.Domain.Entities.CarEntity", b =>
+            modelBuilder.Entity("UsedCarHub.Domain.Entities.AdvertisementEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,8 +125,33 @@ namespace UsedCarHub.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("EngineCapacity")
+                    b.Property<int>("Price")
                         .HasColumnType("integer");
+
+                    b.Property<string>("SellerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SellerId");
+
+                    b.ToTable("Advertisements");
+                });
+
+            modelBuilder.Entity("UsedCarHub.Domain.Entities.CarEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AdvertisementId")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("EngineCapacity")
+                        .HasColumnType("real");
 
                     b.Property<int>("Mark")
                         .HasColumnType("integer");
@@ -138,13 +163,6 @@ namespace UsedCarHub.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("integer");
-
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasColumnType("text");
@@ -152,12 +170,17 @@ namespace UsedCarHub.Domain.Migrations
                     b.Property<int>("TransmissionType")
                         .HasColumnType("integer");
 
+                    b.Property<string>("VIN")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("YearOfProduction")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("AdvertisementId")
+                        .IsUnique();
 
                     b.ToTable("Cars");
                 });
@@ -312,15 +335,26 @@ namespace UsedCarHub.Domain.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("UsedCarHub.Domain.Entities.CarEntity", b =>
+            modelBuilder.Entity("UsedCarHub.Domain.Entities.AdvertisementEntity", b =>
                 {
-                    b.HasOne("UsedCarHub.Domain.Entities.UserEntity", "Owner")
-                        .WithMany("CarsForSale")
-                        .HasForeignKey("OwnerId")
+                    b.HasOne("UsedCarHub.Domain.Entities.UserEntity", "Seller")
+                        .WithMany("Advertisements")
+                        .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Owner");
+                    b.Navigation("Seller");
+                });
+
+            modelBuilder.Entity("UsedCarHub.Domain.Entities.CarEntity", b =>
+                {
+                    b.HasOne("UsedCarHub.Domain.Entities.AdvertisementEntity", "Advertisement")
+                        .WithOne("Car")
+                        .HasForeignKey("UsedCarHub.Domain.Entities.CarEntity", "AdvertisementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advertisement");
                 });
 
             modelBuilder.Entity("UsedCarHub.Domain.Entities.UserRoleEntity", b =>
@@ -342,6 +376,12 @@ namespace UsedCarHub.Domain.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UsedCarHub.Domain.Entities.AdvertisementEntity", b =>
+                {
+                    b.Navigation("Car")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("UsedCarHub.Domain.Entities.RoleEntity", b =>
                 {
                     b.Navigation("UserRoles");
@@ -349,7 +389,7 @@ namespace UsedCarHub.Domain.Migrations
 
             modelBuilder.Entity("UsedCarHub.Domain.Entities.UserEntity", b =>
                 {
-                    b.Navigation("CarsForSale");
+                    b.Navigation("Advertisements");
 
                     b.Navigation("UserRoles");
                 });

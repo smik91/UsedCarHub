@@ -14,6 +14,7 @@ namespace UsedCarHub.BusinessLogic.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
+        private IAccountService _accountServiceImplementation;
 
         public AccountService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService)
         {
@@ -25,15 +26,22 @@ namespace UsedCarHub.BusinessLogic.Services
         public async Task<Result<UserDto>> RegisterAsync(RegisterUserDto registerUserDto)
         {
             if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.Email == registerUserDto.Email))
+            {
                 return Result<UserDto>.Failure(AccountError.SameEmail);
-
+            }
+            
             if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.UserName == registerUserDto.UserName))
+            {
                 return Result<UserDto>.Failure(AccountError.SameUserName);
+            }
+            
+            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.PhoneNumber == registerUserDto.PhoneNumber))
+            {
+                return Result<UserDto>.Failure(AccountError.SamePhone);
+            }
 
             var user = _mapper.Map<UserEntity>(registerUserDto);
-
             var result = await _unitOfWork.UserManager.CreateAsync(user, registerUserDto.Password);
-
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(error => new Error(error.Code, error.Description));
@@ -41,7 +49,6 @@ namespace UsedCarHub.BusinessLogic.Services
             }
 
             var roleResult = await _unitOfWork.UserManager.AddToRoleAsync(user, "Purchaser");
-
             if (!roleResult.Succeeded)
             {
                 var errors = roleResult.Errors.Select(error => new Error(error.Code, error.Description));
@@ -50,15 +57,12 @@ namespace UsedCarHub.BusinessLogic.Services
 
             var createdUser =
                 await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x => x.UserName == registerUserDto.UserName);
-            
-
             var userDto = new UserDto
             {
                 UserName = registerUserDto.UserName,
                 Token = await _tokenService.CreateTokenAsync(user),
                 Id = createdUser.Id
             };
-
             return Result<UserDto>.Success(userDto);
         }
 
@@ -67,11 +71,16 @@ namespace UsedCarHub.BusinessLogic.Services
             var user = await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x =>
                 x.UserName == loginUserDto.UserName);
             if (user == null)
+            {
                 return Result<UserDto>.Failure(AccountError.NotFoundByUserName);
+            }
 
             var result = await _unitOfWork.SignInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, false);
             if (!result.Succeeded)
+            {
                 return Result<UserDto>.Failure(AccountError.InvalidPasswordOrUserName);
+            }
+
             return Result<UserDto>.Success(new UserDto
             {
                 UserName = loginUserDto.UserName,
@@ -80,35 +89,74 @@ namespace UsedCarHub.BusinessLogic.Services
             });
         }
         
-        public async Task<Result<string>> DeleteAsync(DeleteUserDto deleteUserDto)
+        public async Task<Result<string>> DeleteAsync(string userId)
         {
-            var user = await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x =>
-                x.UserName == deleteUserDto.UserName);
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user == null)
-                return Result<string>.Failure(AccountError.NotFoundByUserName);
+            {
+                return Result<string>.Failure(AccountError.NotFoundById);
+            }
 
             var result = await _unitOfWork.UserManager.DeleteAsync(user);
             if (!result.Succeeded)
+            {
                 return Result<string>.Failure(result.Errors.Select(x=> new Error(x.Code,x.Description)));
-            return Result<string>.Success($"user \"{deleteUserDto.UserName}\" was deleted");
+            }
+
+            return Result<string>.Success($"user \"{user.UserName}\" was deleted");
         }
 
         public async Task<Result<UpdateUserDto>> UpdateAsync(string userId, UpdateUserDto updateUserDto)
         {
             var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user == null)
+            {
                 return Result<UpdateUserDto>.Failure(AccountError.NotFoundById);
+            }
+
             _mapper.Map(updateUserDto, user);
             var resultUpdate = await _unitOfWork.UserManager.UpdateAsync(user);
             if (resultUpdate.Succeeded)
+            {
                 return Result<UpdateUserDto>.Success(updateUserDto);
+            }
+
             return Result<UpdateUserDto>.Failure(resultUpdate.Errors.Select(x => new Error
                 (x.Code, x.Code)));
         }
 
-        public Task<Result<UserInfoDto>> GetInfoAsync(string userId)
+        public async Task<Result<InfoUserDto>> GetInfoAsync(string userId)
         {
-            throw new NotImplementedException();
+            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Result<InfoUserDto>.Failure(AccountError.NotFoundById);
+            }
+
+            var userInfoDto = _mapper.Map<InfoUserDto>(user);
+            return Result<InfoUserDto>.Success(userInfoDto);
+        }
+        
+        public async Task<Result<string>> GiveSellerRole(string userId)
+        {
+            var user = await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                return Result<string>.Failure(AccountError.NotFoundById);
+            }
+
+            var resultAddRole = await _unitOfWork.UserManager.AddToRoleAsync(user, "Seller");
+            if (!resultAddRole.Succeeded)
+            {
+                return Result<string>.Failure(resultAddRole.Errors.Select(x => new Error(x.Code,x.Description)));
+            }
+
+            if (await _unitOfWork.Commit())
+            {
+                return Result<string>.Success($"A role has been added to the user {user.UserName}");
+            }
+
+            return Result<string>.Failure(DbError.FailSaveChanges);
         }
     }
 }

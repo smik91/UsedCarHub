@@ -22,6 +22,8 @@ namespace UsedCarHub.API.Extensions
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
+            services.AddScoped<IAdvertisementService, AdvertisementService>();
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddAutoMapper(typeof(AppMappingProfile).Assembly);

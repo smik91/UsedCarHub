@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using UsedCarHub.Common.Errors;
 using UsedCarHub.Common.Results;
 using UsedCarHub.Domain;
@@ -15,61 +15,55 @@ namespace UsedCarHub.Repository.Repositories
         {
             _dbContext = dbContext;
         }
-
-        public async Task<Result<CarEntity>> AddAsync(CarEntity car)
+        
+        public async Task<Result<CarEntity>> GetAsync(int carId)
         {
-            if (await _dbContext.Cars.AnyAsync(c => c.RegistrationNumber == car.RegistrationNumber))
-            {
-                return Result<CarEntity>.Failure(CarError.SameRegNumber);
-            }
-
-            if (car.RegistrationNumber == null)
-            {
-                return Result<CarEntity>.Failure(CarError.RegNumberIsNull);
-            }
-
-            if (car.Model == null)
-            {
-                return Result<CarEntity>.Failure(CarError.ModelIsNull);
-            }
-
-            await _dbContext.Cars.AddAsync(car);
-            await _dbContext.SaveChangesAsync();
+            var car = await _dbContext.Cars.AsNoTracking().FirstOrDefaultAsync(x => x.Id == carId);
+            if (car == null)
+                return Result<CarEntity>.Failure(CarError.NotFoundById);
+            
             return Result<CarEntity>.Success(car);
         }
 
-        public async Task<Result<CarEntity>> DeleteAsync(int id)
+        public async Task<Result<CarEntity>> DeleteAsync(int carId)
         {
-            var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == id);
+            var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == carId);
             if (car == null)
-            {
                 return Result<CarEntity>.Failure(CarError.NotFoundById);
-            }
-
+            
             _dbContext.Cars.Remove(car);
             await _dbContext.SaveChangesAsync();
             return Result<CarEntity>.Success(car);
         }
 
-        public async Task<IEnumerable<CarEntity>> GetAllAsync()
+        public async Task<Result<CarEntity>> AddAsync(CarEntity car)
         {
-            return await _dbContext.Cars.AsNoTracking().ToListAsync();
-        }
-
-        public async Task<Result<CarEntity>> GetAsync(int id)
-        {
-            var car = await _dbContext.Cars.AsNoTracking().Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
-            if (car == null)
-            {
-                return Result<CarEntity>.Failure(CarError.NotFoundById);
-            }
-
+            if (await _dbContext.Cars.AnyAsync(x => x.VIN == car.VIN))
+                return Result<CarEntity>.Failure(CarError.SameVIN);
+            
+            await _dbContext.Cars.AddAsync(car);
+            await _dbContext.SaveChangesAsync();
             return Result<CarEntity>.Success(car);
         }
 
-        public async Task<IEnumerable<CarEntity>> GetWithOwnerAsync()
+        public async Task<Result<CarEntity>> UpdateAsync(int carId, CarEntity updateCar)
         {
-            return await _dbContext.Cars.Include(x => x.Owner).AsNoTracking().ToListAsync();
+            var car = await _dbContext.Cars.FirstOrDefaultAsync(x => x.Id == carId);
+            if (car == null)
+                return Result<CarEntity>.Failure(CarError.NotFoundById);
+            
+            if (await _dbContext.Cars.AnyAsync(x => x.VIN == updateCar.VIN))
+                return Result<CarEntity>.Failure(CarError.SameVIN);
+            
+            car.RegistrationNumber = updateCar.RegistrationNumber;
+            car.Mark = updateCar.Mark;
+            car.Model = updateCar.Model;
+            car.YearOfProduction = updateCar.YearOfProduction;
+            car.TransmissionType = updateCar.TransmissionType;
+            car.EngineCapacity = updateCar.EngineCapacity;
+            car.Mileage = updateCar.Mileage;
+            await _dbContext.SaveChangesAsync();
+            return Result<CarEntity>.Success(car);
         }
     }
 }

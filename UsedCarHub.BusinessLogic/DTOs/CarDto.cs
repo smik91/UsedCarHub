@@ -1,10 +1,9 @@
 using UsedCarHub.Domain.Enums;
 
-namespace UsedCarHub.Domain.Entities
+namespace UsedCarHub.BusinessLogic.DTOs
 {
-    public class CarEntity
+    public class CarDto
     {
-        public int Id { get; set; }
         public string RegistrationNumber { get; set; }
         public string VIN { get; set; }
         public Marks Mark { get; set; }
@@ -13,7 +12,5 @@ namespace UsedCarHub.Domain.Entities
         public Transmission TransmissionType { get; set; }
         public float EngineCapacity { get; set; }
         public int Mileage { get; set; }
-        public AdvertisementEntity Advertisement { get; set; }
-        public int AdvertisementId { get; set; }
     }
 }

@@ -17,9 +17,9 @@ namespace UsedCarHub.Domain
 
             var roles = new List<RoleEntity>
             {
-                new RoleEntity { Name = "Admin" },
+                new RoleEntity { Name = "Purchaser" },
                 new RoleEntity { Name = "Seller" },
-                new RoleEntity { Name = "Purchaser" }
+                new RoleEntity { Name = "Admin" }
             };
 
             foreach (var role in roles)
@@ -34,8 +34,8 @@ namespace UsedCarHub.Domain
                 if (user.PhoneNumber == "+123456789")
                     await userManager.AddToRoleAsync(user, "Seller");
             }
-            
-            /*var admin = new UserEntity
+
+            var admin = new UserEntity
             {
                 UserName = "admin",
                 FirstName = "Admin",
@@ -47,7 +47,7 @@ namespace UsedCarHub.Domain
                 TwoFactorEnabled = false
             };
             await userManager.CreateAsync(admin, "Admin100");
-            await userManager.AddToRolesAsync(admin, new[] { "Purchaser", "Seller", "Admin" });*/
+            await userManager.AddToRolesAsync(admin, new[] { "Purchaser", "Seller", "Admin" });
         }
     }
 }

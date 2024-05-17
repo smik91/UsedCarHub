@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using UsedCarHub.Domain;
 using UsedCarHub.Domain.Entities;
 using UsedCarHub.Repository.Interfaces;
@@ -21,7 +22,15 @@ namespace UsedCarHub.Repository
 
         public async Task<bool> Commit()
         {
-            return await _dbContext.SaveChangesAsync() > 0;
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                return false;
+            }
         }
     }
 }

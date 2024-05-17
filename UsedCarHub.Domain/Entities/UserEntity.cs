@@ -8,6 +8,6 @@ namespace UsedCarHub.Domain.Entities
         public string LastName { get; set; }
         public string Email { get; set; }
         public ICollection<UserRoleEntity> UserRoles { get; set; }
-        public ICollection<CarEntity> CarsForSale { get; set; }
+        public ICollection<AdvertisementEntity> Advertisements { get; set; }
     }
 }
