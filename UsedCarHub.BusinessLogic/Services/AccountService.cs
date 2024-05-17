@@ -34,6 +34,11 @@ namespace UsedCarHub.BusinessLogic.Services
             {
                 return Result<UserDto>.Failure(AccountError.SameUserName);
             }
+            
+            if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.PhoneNumber == registerUserDto.PhoneNumber))
+            {
+                return Result<UserDto>.Failure(AccountError.SamePhone);
+            }
 
             var user = _mapper.Map<UserEntity>(registerUserDto);
             var result = await _unitOfWork.UserManager.CreateAsync(user, registerUserDto.Password);
