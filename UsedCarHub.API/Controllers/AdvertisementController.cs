@@ -87,7 +87,7 @@ namespace UsedCarHub.API.Controllers
         /// <response code="404">If the advertisement is not found</response>
         [HttpPut("update")]
         [Authorize(Policy = "RequireSellerRole")]
-        public async Task<IActionResult> UpdateAsync(int advertisementId, UpdateAdvertisementDto updateAdvertisementDto)
+        public async Task<IActionResult> UpdateAsync(int advertisementId,[FromBody] UpdateAdvertisementDto updateAdvertisementDto)
         {
             var resultUpdate = await _advertisementService.UpdateAsync(advertisementId, updateAdvertisementDto);
             if (resultUpdate.IsSuccess)

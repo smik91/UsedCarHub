@@ -26,6 +26,7 @@ namespace UsedCarHub.API.Extensions
             services.AddScoped<IAdvertisementService, AdvertisementService>();
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddAutoMapper(typeof(AppMappingProfile).Assembly);
             return services;
         }

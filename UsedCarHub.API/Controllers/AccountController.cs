@@ -20,7 +20,6 @@ namespace UsedCarHub.API.Controllers
         /// Account registration
         /// </summary>
         /// <param name="registerUserDto"></param>
-        /// <returns>A newly created user with Id, username and JWT Token</returns>
         /// <remarks>
         /// Sample request:
         /// 
@@ -34,7 +33,7 @@ namespace UsedCarHub.API.Controllers
         ///        "phoneNumber": "+123456789"
         ///      }
         /// </remarks>
-        /// <response code="200">Returns a newly created user with Id, username and JWT Token</response>
+        /// <response code="200">Returns confirmation of successful registration</response>
         /// <response code="400">If user with this username/email/phone number already exists.</response>
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
@@ -51,7 +50,6 @@ namespace UsedCarHub.API.Controllers
         /// Log in to account
         /// </summary>
         /// <param name="loginUserDto"></param>
-        /// <returns>User ID, JWT token, username.</returns>
         /// <remarks>
         /// Sample request:
         /// 
@@ -61,7 +59,7 @@ namespace UsedCarHub.API.Controllers
         ///        "password": "PasswordExample1234"
         ///      }
         /// </remarks>
-        /// <response code="200">Returns JWT token,user ID and username.</response>
+        /// <response code="200">Returns ID, username, JWT Token and profile.</response>
         /// <response code="400">If the username or password is incorrect.</response>
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserDto loginUserDto)
@@ -89,14 +87,14 @@ namespace UsedCarHub.API.Controllers
         /// Delete account
         /// </summary>
         /// <param name="userId">The ID of the user to delete</param>
-        /// <returns>Confirmation of deletion</returns>
+        /// <param name="password">The password of the user to delete</param>
         /// <response code="200">Returns confirmation of successful deletion.</response>
         /// <response code="404">If the user is not found.</response>
         [HttpDelete("delete")]
         [Authorize]
-        public async Task<IActionResult> Delete(string userId)
+        public async Task<IActionResult> Delete(string userId, string password)
         {
-            var resultDeleteUser = await _accountService.DeleteAsync(userId);
+            var resultDeleteUser = await _accountService.DeleteAsync(userId, password);
             if (resultDeleteUser.IsSuccess)
             {
                 return Ok(resultDeleteUser.Value);
@@ -119,8 +117,6 @@ namespace UsedCarHub.API.Controllers
         ///        "userName": "exampleUsername",
         ///        "email": "exampleeamil10@gmail.com",
         ///        "password": "PasswordExample1234",
-        ///        "firstName": "Example",
-        ///        "lastName": "Example",
         ///        "phoneNumber": "+123456789"
         ///      }
         /// </remarks>

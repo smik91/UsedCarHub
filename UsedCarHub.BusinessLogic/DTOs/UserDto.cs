@@ -5,5 +5,6 @@ namespace UsedCarHub.BusinessLogic.DTOs
         public string Id { get; set; }
         public string UserName { get; set; }
         public string Token { get; set; }
+        public ProfileDto Profile { get; set; }
     }
 }

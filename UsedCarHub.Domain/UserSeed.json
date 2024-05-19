@@ -1,8 +1,6 @@
 [
   {
     "UserName": "lizzyn",
-    "FirstName": "Edghar",
-    "LastName": "Primo",
     "Email": "chuvak10@gmail.com",
     "EmailConfirmed": true,
     "PhoneNumberConfirmed": true,
@@ -11,8 +9,6 @@
   },
   {
     "UserName": "pudge",
-    "FirstName": "Edghar",
-    "LastName": "Primo",
     "Email": "chuvak09@gmail.com",
     "EmailConfirmed": true,
     "PhoneNumberConfirmed": true,
