@@ -27,8 +27,10 @@ namespace UsedCarHub.Repository.Repositories
         {
             var advertisement = await _dbContext.Advertisements.FirstOrDefaultAsync(x => x.Id == advertisementId);
             if (advertisement == null)
+            {
                 return Result<AdvertisementEntity>.Failure(AdvertisementError.NotFoundById);
-            
+            }
+
             _dbContext.Advertisements.Remove(advertisement);
             await _dbContext.SaveChangesAsync();
             return Result<AdvertisementEntity>.Success(advertisement);
@@ -49,8 +51,10 @@ namespace UsedCarHub.Repository.Repositories
                 .Include(x => x.Car)
                 .FirstOrDefaultAsync(x => x.Id == advertisementId);
             if (advertisement == null)
+            {
                 return Result<AdvertisementEntity>.Failure(AdvertisementError.NotFoundById);
-            
+            }
+
             return Result<AdvertisementEntity>.Success(advertisement);
         }
     }

@@ -14,7 +14,6 @@ namespace UsedCarHub.BusinessLogic.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
-        private IAccountService _accountServiceImplementation;
 
         public AccountService(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService)
         {
@@ -23,21 +22,21 @@ namespace UsedCarHub.BusinessLogic.Services
             _tokenService = tokenService;
         }
 
-        public async Task<Result<UserDto>> RegisterAsync(RegisterUserDto registerUserDto)
+        public async Task<Result<string>> RegisterAsync(RegisterUserDto registerUserDto)
         {
             if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.Email == registerUserDto.Email))
             {
-                return Result<UserDto>.Failure(AccountError.SameEmail);
+                return Result<string>.Failure(AccountError.SameEmail);
             }
             
             if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.UserName == registerUserDto.UserName))
             {
-                return Result<UserDto>.Failure(AccountError.SameUserName);
+                return Result<string>.Failure(AccountError.SameUserName);
             }
             
             if (await _unitOfWork.UserManager.Users.AnyAsync(x => x.PhoneNumber == registerUserDto.PhoneNumber))
             {
-                return Result<UserDto>.Failure(AccountError.SamePhone);
+                return Result<string>.Failure(AccountError.SamePhone);
             }
 
             var user = _mapper.Map<UserEntity>(registerUserDto);
@@ -45,31 +44,43 @@ namespace UsedCarHub.BusinessLogic.Services
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(error => new Error(error.Code, error.Description));
-                return Result<UserDto>.Failure(errors);
+                return Result<string>.Failure(errors);
             }
 
             var roleResult = await _unitOfWork.UserManager.AddToRoleAsync(user, "Purchaser");
             if (!roleResult.Succeeded)
             {
                 var errors = roleResult.Errors.Select(error => new Error(error.Code, error.Description));
-                return Result<UserDto>.Failure(errors);
+                return Result<string>.Failure(errors);
             }
 
             var createdUser =
                 await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x => x.UserName == registerUserDto.UserName);
-            var userDto = new UserDto
+            if (createdUser == null)
             {
-                UserName = registerUserDto.UserName,
-                Token = await _tokenService.CreateTokenAsync(user),
-                Id = createdUser.Id
+                return Result<string>.Failure(AccountError.NotFoundById);
+            }
+
+            createdUser.Profile = new ProfileEntity
+            {
+                FirstName = registerUserDto.FirstName,
+                LastName = registerUserDto.LastName,
+                UserId = createdUser.Id
             };
-            return Result<UserDto>.Success(userDto);
+            if (!await _unitOfWork.Commit())
+            {
+                return Result<string>.Failure(DbError.FailSaveChanges);
+            }
+            
+            return Result<string>.Success($"{createdUser.UserName} has been registered");
         }
 
         public async Task<Result<UserDto>> LoginAsync(LoginUserDto loginUserDto)
         {
-            var user = await _unitOfWork.UserManager.Users.FirstOrDefaultAsync(x =>
-                x.UserName == loginUserDto.UserName);
+            var user = await _unitOfWork.UserManager.Users
+                .AsNoTracking()
+                .Include(x=>x.Profile)
+                .FirstOrDefaultAsync(x => x.UserName == loginUserDto.UserName);
             if (user == null)
             {
                 return Result<UserDto>.Failure(AccountError.NotFoundByUserName);
@@ -85,16 +96,23 @@ namespace UsedCarHub.BusinessLogic.Services
             {
                 UserName = loginUserDto.UserName,
                 Token = await _tokenService.CreateTokenAsync(user),
-                Id = user.Id
+                Id = user.Id,
+                Profile = _mapper.Map<ProfileDto>(user.Profile)
             });
         }
         
-        public async Task<Result<string>> DeleteAsync(string userId)
+        public async Task<Result<string>> DeleteAsync(string userId, string password)
         {
             var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return Result<string>.Failure(AccountError.NotFoundById);
+            }
+
+            var checkPasswordResult = await _unitOfWork.SignInManager.CheckPasswordSignInAsync(user, password, false);
+            if (!checkPasswordResult.Succeeded)
+            {
+                return Result<string>.Failure(AccountError.InvalidPasswordOrUserName);
             }
 
             var result = await _unitOfWork.UserManager.DeleteAsync(user);
@@ -127,13 +145,17 @@ namespace UsedCarHub.BusinessLogic.Services
 
         public async Task<Result<InfoUserDto>> GetInfoAsync(string userId)
         {
-            var user = await _unitOfWork.UserManager.FindByIdAsync(userId);
+            var user = await _unitOfWork.UserManager.Users
+                .AsNoTracking()
+                .Include(x => x.Profile)
+                .FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
             {
                 return Result<InfoUserDto>.Failure(AccountError.NotFoundById);
             }
 
             var userInfoDto = _mapper.Map<InfoUserDto>(user);
+            userInfoDto.Profile = _mapper.Map<ProfileDto>(user.Profile);
             return Result<InfoUserDto>.Success(userInfoDto);
         }
         

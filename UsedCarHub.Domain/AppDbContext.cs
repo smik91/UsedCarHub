@@ -17,6 +17,7 @@ namespace UsedCarHub.Domain
 
         public DbSet<AdvertisementEntity> Advertisements { get; set; }
         public DbSet<CarEntity> Cars { get; set; }
+        public DbSet<ProfileEntity> Profiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +26,7 @@ namespace UsedCarHub.Domain
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new AdvertisementConfiguration());
             modelBuilder.ApplyConfiguration(new CarConfiguration());
+            modelBuilder.ApplyConfiguration(new ProfileConfiguration());
             modelBuilder.ApplyUtcDateTimeConverter();
         }
     }

@@ -185,6 +185,36 @@ namespace UsedCarHub.Domain.Migrations
                     b.ToTable("Cars");
                 });
 
+            modelBuilder.Entity("UsedCarHub.Domain.Entities.ProfileEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Profiles");
+                });
+
             modelBuilder.Entity("UsedCarHub.Domain.Entities.RoleEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -230,14 +260,6 @@ namespace UsedCarHub.Domain.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -357,6 +379,17 @@ namespace UsedCarHub.Domain.Migrations
                     b.Navigation("Advertisement");
                 });
 
+            modelBuilder.Entity("UsedCarHub.Domain.Entities.ProfileEntity", b =>
+                {
+                    b.HasOne("UsedCarHub.Domain.Entities.UserEntity", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("UsedCarHub.Domain.Entities.ProfileEntity", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("UsedCarHub.Domain.Entities.UserRoleEntity", b =>
                 {
                     b.HasOne("UsedCarHub.Domain.Entities.RoleEntity", "Role")
@@ -390,6 +423,9 @@ namespace UsedCarHub.Domain.Migrations
             modelBuilder.Entity("UsedCarHub.Domain.Entities.UserEntity", b =>
                 {
                     b.Navigation("Advertisements");
+
+                    b.Navigation("Profile")
+                        .IsRequired();
 
                     b.Navigation("UserRoles");
                 });

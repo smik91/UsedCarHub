@@ -11,6 +11,11 @@ namespace UsedCarHub.Domain.Configurations
             builder.HasMany(u => u.UserRoles)
                 .WithOne(ur => ur.User)
                 .HasForeignKey(ur => ur.UserId).IsRequired();
+            
+            builder.HasOne(u => u.Profile)
+                .WithOne(p => p.User)
+                .HasForeignKey<ProfileEntity>(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
