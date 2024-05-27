@@ -66,6 +66,7 @@ namespace UsedCarHub.Repository.Repositories
             }
 
             car.RegistrationNumber = updateCar.RegistrationNumber;
+            car.VIN = updateCar.VIN;
             car.Mark = updateCar.Mark;
             car.Model = updateCar.Model;
             car.YearOfProduction = updateCar.YearOfProduction;

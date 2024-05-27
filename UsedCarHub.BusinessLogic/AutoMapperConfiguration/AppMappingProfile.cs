@@ -14,8 +14,11 @@ namespace UsedCarHub.BusinessLogic.AutoMapperConfiguration
             CreateMap<CarEntity, CarDto>().ReverseMap();
             CreateMap<AddAdvertisementDto, AdvertisementEntity>()
                 .ForMember(dest => dest.Car, opt => opt.Ignore());
-            CreateMap<AdvertisementEntity, AdvertisementDto>();
+            CreateMap<AdvertisementEntity, AdvertisementDto>().ReverseMap();
             CreateMap<ProfileEntity, ProfileDto>().ReverseMap();
+            CreateMap<AdvertisementEntity, UpdateAdvertisementDto>().ReverseMap();
+            CreateMap<AdvertisementEntity, InfoAdvertisementDto>()
+                .ForMember(dest => dest.Car, opt => opt.Ignore());
         }
     }
 }

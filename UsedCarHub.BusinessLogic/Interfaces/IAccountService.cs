@@ -11,5 +11,6 @@ namespace UsedCarHub.BusinessLogic.Interfaces
         Task<Result<InfoUserDto>> GetInfoAsync(string userId);
         Task<Result<string>> DeleteAsync(string userId, string password);
         Task<Result<string>> GiveSellerRole(string userId);
+        Task<Result<IEnumerable<AdvertisementDto>>> GetAdvertisements(string userId);
     }
 }
