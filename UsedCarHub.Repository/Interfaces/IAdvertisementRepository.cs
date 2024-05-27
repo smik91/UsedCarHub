@@ -9,5 +9,6 @@ namespace UsedCarHub.Repository.Interfaces
         public Task<Result<AdvertisementEntity>> GetAsync(int advertisementId);
         public Task<Result<AdvertisementEntity>> DeleteAsync(int advertisementId);
         public Task<Result<AdvertisementEntity>> AddAsync(AdvertisementEntity advertisement);
+        public Task<Result<string>> UpdateAsync(int advertisementId, AdvertisementEntity updateAdvertisement);
     }
 }

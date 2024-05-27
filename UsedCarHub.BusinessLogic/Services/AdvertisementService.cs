@@ -11,7 +11,6 @@ namespace UsedCarHub.BusinessLogic.Services
 {
     public class AdvertisementService : IAdvertisementService
     {
-        private IAdvertisementService _advertisementServiceImplementation;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAdvertisementRepository _advertisementRepository;
         private readonly IMapper _mapper;
@@ -23,11 +22,12 @@ namespace UsedCarHub.BusinessLogic.Services
             _mapper = mapper;
         }
         
-        public async Task<Result<AdvertisementDto>> AddAsync(AddAdvertisementDto addAdvertisementDto)
+        public async Task<Result<AdvertisementDto>> AddAsync(AddAdvertisementDto addAdvertisementDto, string currentUserId)
         {
             CarEntity car = _mapper.Map<CarEntity>(addAdvertisementDto.Car);
             var advertisement = _mapper.Map<AdvertisementEntity>(addAdvertisementDto);
             advertisement.Car = car;
+            advertisement.SellerId = currentUserId;
             var advertisementAddResult = await _advertisementRepository.AddAsync(advertisement);
             if (!advertisementAddResult.IsSuccess)
             {
@@ -50,15 +50,45 @@ namespace UsedCarHub.BusinessLogic.Services
             var advertisementDto = _mapper.Map<AdvertisementDto>(advertisement);
             return Result<AdvertisementDto>.Success(advertisementDto);
         }
-
-        public Task<Result<UpdateAdvertisementDto>> UpdateAsync(int advertisementId, UpdateAdvertisementDto updateAdvertisementDto)
+        
+        public async Task<Result<InfoAdvertisementDto>> GetInfoAsync(int advertisementId)
         {
-            return _advertisementServiceImplementation.UpdateAsync(advertisementId, updateAdvertisementDto);
+            var getAdvertisementResult = await _advertisementRepository.GetAsync(advertisementId);
+            if (getAdvertisementResult.IsSuccess)
+            {
+                var carAdvertisement = _mapper.Map<CarDto>(getAdvertisementResult.Value.Car);
+                var advertisement = _mapper.Map<InfoAdvertisementDto>(getAdvertisementResult.Value);
+                advertisement.Car = carAdvertisement;
+                return Result<InfoAdvertisementDto>.Success(advertisement);
+            }
+
+            return Result<InfoAdvertisementDto>.Failure(getAdvertisementResult.ExecutionErrors);
         }
-
-        public Task<Result<InfoAdvertisementDto>> GetInfoAsync(int advertisementId)
+        
+        public async Task<Result<List<InfoAdvertisementDto>>> GetAllInfoAsync()
         {
-            return _advertisementServiceImplementation.GetInfoAsync(advertisementId);
+            var allAdvertisementsFromDb = await _advertisementRepository.GetAllAsync();
+            var allAdvertisements = allAdvertisementsFromDb
+                .Select(ad =>
+                {
+                    var advertisementDto = _mapper.Map<InfoAdvertisementDto>(ad);
+                    advertisementDto.Car = _mapper.Map<CarDto>(ad.Car);
+                    return advertisementDto;
+                })
+                .ToList();
+            return Result<List<InfoAdvertisementDto>>.Success(allAdvertisements);
+        }
+        
+        public async Task<Result<string>> UpdateAsync(int advertisementId, UpdateAdvertisementDto updateAdvertisementDto)
+        {
+            var advertisementEntity = _mapper.Map<AdvertisementEntity>(updateAdvertisementDto);
+            var updateAdvertisementResult = await _advertisementRepository.UpdateAsync(advertisementId, advertisementEntity);
+            if (updateAdvertisementResult.IsSuccess)
+            {
+                return Result<string>.Success(updateAdvertisementResult.Value);
+            }
+
+            return Result<string>.Failure(updateAdvertisementResult.ExecutionErrors);
         }
 
         public async Task<Result<string>> DeleteAsync(int advertisementId)

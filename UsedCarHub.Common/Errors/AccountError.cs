@@ -20,10 +20,7 @@ namespace UsedCarHub.Common.Errors
         public static readonly Error InvalidPasswordOrUserName =
             new Error("Account.InvalidPasswordOrUserName", "Invalid password or username");
 
-        public static readonly Error Addition =
-            new Error("Account.AdditionError", "Fail to add account to DB");
-
-        public static readonly Error AdditionToRole =
-            new Error("Account.AdditionToRole", "Fail to add this user to role");
+        public static readonly Error NoAccess =
+            new Error("Account.NoAccess", "There is no access to this account");
     }
 }

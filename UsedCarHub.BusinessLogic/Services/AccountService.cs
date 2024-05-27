@@ -180,5 +180,25 @@ namespace UsedCarHub.BusinessLogic.Services
 
             return Result<string>.Failure(DbError.FailSaveChanges);
         }
+
+        public async Task<Result<IEnumerable<AdvertisementDto>>> GetAdvertisements(string userId)
+        {
+            var user = await _unitOfWork.UserManager.Users
+                .AsNoTracking()
+                .Include(x => x.Advertisements)
+                .FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                return Result<IEnumerable<AdvertisementDto>>.Failure(AccountError.NotFoundById);
+            }
+
+            var advertisements = new List<AdvertisementDto>();
+            foreach (AdvertisementEntity advertisement in user.Advertisements)
+            {
+                advertisements.Add(_mapper.Map<AdvertisementDto>(advertisement));
+            }
+
+            return Result<IEnumerable<AdvertisementDto>>.Success(advertisements);
+        }
     }
 }

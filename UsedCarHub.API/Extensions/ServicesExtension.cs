@@ -20,6 +20,10 @@ namespace UsedCarHub.API.Extensions
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = config.GetSection("RedisCacheSettings:ConnectionString").Value;
+            });
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();

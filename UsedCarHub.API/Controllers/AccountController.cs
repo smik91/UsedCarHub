@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UsedCarHub.BusinessLogic.DTOs;
 using UsedCarHub.BusinessLogic.Interfaces;
@@ -26,7 +27,7 @@ namespace UsedCarHub.API.Controllers
         ///      POST /Account/register
         ///      {
         ///        "userName": "exampleUsername",
-        ///        "email": "exampleeamil10@gmail.com",
+        ///        "email": "exampleemail10@gmail.com",
         ///        "password": "PasswordExample1234",
         ///        "firstName": "Example",
         ///        "lastName": "Example",
@@ -84,17 +85,41 @@ namespace UsedCarHub.API.Controllers
         }
         
         /// <summary>
+        /// Get account info
+        /// </summary>
+        /// <param name="userId">The ID of user to get info</param>
+        /// <response code="200">Returns info about user.</response>
+        /// <response code="401">If user with this ID doesn't exists</response>
+        [HttpGet("get")]
+        public async Task<IActionResult> GetInfo(string userId)
+        {
+            var getInfoResult = await _accountService.GetInfoAsync(userId);
+            if (getInfoResult.IsSuccess)
+            {
+                return Ok(getInfoResult.Value);
+            }
+
+            return BadRequest(getInfoResult.ExecutionErrors.Select(x => x.Description));
+        }
+        
+        /// <summary>
         /// Delete account
         /// </summary>
-        /// <param name="userId">The ID of the user to delete</param>
         /// <param name="password">The password of the user to delete</param>
         /// <response code="200">Returns confirmation of successful deletion.</response>
-        /// <response code="404">If the user is not found.</response>
+        /// <response code="401">If user is not authorized</response>
+        /// <response code="404">If password is not correct.</response>
         [HttpDelete("delete")]
         [Authorize]
-        public async Task<IActionResult> Delete(string userId, string password)
+        public async Task<IActionResult> Delete(string password)
         {
-            var resultDeleteUser = await _accountService.DeleteAsync(userId, password);
+            string? currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+            
+            var resultDeleteUser = await _accountService.DeleteAsync(currentUserId, password);
             if (resultDeleteUser.IsSuccess)
             {
                 return Ok(resultDeleteUser.Value);
@@ -106,7 +131,6 @@ namespace UsedCarHub.API.Controllers
         /// <summary>
         /// Update account details
         /// </summary>
-        /// <param name="userId">The ID of the user to update</param>
         /// <param name="updateUserDto">The new user details</param>
         /// <returns>Updated user details</returns>
         /// <remarks>
@@ -121,12 +145,19 @@ namespace UsedCarHub.API.Controllers
         ///      }
         /// </remarks>
         /// <response code="200">Returns the updated user details.</response>
-        /// <response code="404">If the user is not found.</response>
+        /// <response code="401">If user is not authorized</response>
+        /// <response code="404">If data is not correct.</response>
         [HttpPut("update")]
         [Authorize]
-        public async Task<IActionResult> Update(string userId, UpdateUserDto updateUserDto)
+        public async Task<IActionResult> Update(UpdateUserDto updateUserDto)
         {
-            var resultUpdateUser = await _accountService.UpdateAsync(userId, updateUserDto);
+            string? currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+           
+            var resultUpdateUser = await _accountService.UpdateAsync(currentUserId, updateUserDto);
             if (resultUpdateUser.IsSuccess)
             {
                 return Ok(resultUpdateUser.Value);
@@ -138,21 +169,48 @@ namespace UsedCarHub.API.Controllers
         /// <summary>
         /// Grant seller role to user
         /// </summary>
-        /// <param name="userId">The ID of the user to grant the seller role</param>
         /// <returns>Confirmation of role assignment</returns>
         /// <response code="200">Returns confirmation of successful role assignment.</response>
-        /// <response code="400">If there is an error in granting the role.</response>
+        /// <response code="401">If user is not authorized</response>
+        /// <response code="400">If there is an error in granting the role or user is not authorized.</response>
         [HttpPost("sellerRole")]
         [Authorize(Policy = "RequirePurchaserRole")]
-        public async Task<IActionResult> GiveSellerRole(string userId)
+        public async Task<IActionResult> GiveSellerRole()
         {
-            var resultGiveRole = await _accountService.GiveSellerRole(userId);
+            string? currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var resultGiveRole = await _accountService.GiveSellerRole(currentUserId);
             if (resultGiveRole.IsSuccess)
             {
                 return Ok(resultGiveRole.Value);
             }
             
             return BadRequest(resultGiveRole.ExecutionErrors);
+        }
+        
+        /// <summary>
+        /// Get all user's advertisements
+        /// </summary>
+        /// <returns>All user's advertisements</returns>
+        /// <response code="200">Returns all user's advertisements.</response>
+        /// <response code="401">If user is not authorized</response>
+        /// <response code="400">If user is not authorized.</response>
+        [HttpGet("advertisements")]
+        [Authorize(Policy = "RequireSellerRole")]
+        public async Task<IActionResult> GetAdvertisements()
+        {
+            string? currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            var resultAdvertisements = await _accountService.GetAdvertisements(currentUserId);
+            if (resultAdvertisements.IsSuccess)
+            {
+                return Ok(resultAdvertisements.Value);
+            }
+
+            return BadRequest();
         }
     }
 }

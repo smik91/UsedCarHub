@@ -23,6 +23,20 @@ namespace UsedCarHub.Repository.Repositories
             return Result<AdvertisementEntity>.Success(advertisement);
         }
 
+        public async Task<Result<string>> UpdateAsync(int advertisementId, AdvertisementEntity updateAdvertisement)
+        {
+            var advertisement = await _dbContext.Advertisements.FirstOrDefaultAsync(x => x.Id == advertisementId);
+            if (advertisement == null)
+            {
+                return Result<string>.Failure(AdvertisementError.NotFoundById);
+            }
+
+            advertisement.Price = updateAdvertisement.Price;
+            advertisement.Description = updateAdvertisement.Description;
+            await _dbContext.SaveChangesAsync();
+            return Result<string>.Success("Advertisement was updated.");
+        }
+
         public async Task<Result<AdvertisementEntity>> DeleteAsync(int advertisementId)
         {
             var advertisement = await _dbContext.Advertisements.FirstOrDefaultAsync(x => x.Id == advertisementId);
@@ -38,16 +52,16 @@ namespace UsedCarHub.Repository.Repositories
 
         public async Task<IEnumerable<AdvertisementEntity>> GetAllAsync()
         {
-            return await _dbContext.Advertisements.Include(x => x.Car)
-                .Include(x => x.SellerId)
+            return await _dbContext.Advertisements
+                .Include(x => x.Car)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<Result<AdvertisementEntity>> GetAsync(int advertisementId)
         {
-            var advertisement = await _dbContext.Advertisements.AsNoTracking()
-                .Include(x => x.SellerId)
+            var advertisement = await _dbContext.Advertisements
+                .AsNoTracking()
                 .Include(x => x.Car)
                 .FirstOrDefaultAsync(x => x.Id == advertisementId);
             if (advertisement == null)
