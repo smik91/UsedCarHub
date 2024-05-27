@@ -30,6 +30,8 @@
   <li><strong>ASP.NET Core</strong></li>
   <li><strong>Entity Framework Core</strong></li>
   <li><strong>PostgreSQL</strong></li>
+  <li><strong>Identity</strong></li>
+  <li><strong>Redis cache</strong></li>
 </ul>
 
 <h2 align="center">Installation and Running</h2>
